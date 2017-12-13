@@ -54,7 +54,7 @@ end)
 
 local IRC=require ('irc')
 
-local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#erp"}})
+local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#main"}})
 
 c:on ("connecting", function(nick, server, username, real_name)
         print(string.format("Connecting to %s as %s...", server, nick))
@@ -139,8 +139,8 @@ c:on ("unhandled", function(msg)
 end)
 
 local os = require'os'
-if os.getenv"DISCORDAPI" then
-	client:run('Bot '..os.getenv("DISCORDAPI"))
+if os.getenv"DISCORDKEY" then
+	client:run('Bot '..os.getenv("DISCORDKEY"))
 else
 	print"NO DISCORD KEY"
 end
