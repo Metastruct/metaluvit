@@ -107,13 +107,14 @@ client:on("messageCreate", function(message)
 					attachments = hasAttachments.url
 				end
 			end
-			message.content = message.content:gsub("<@%d->", function(id) --  nickname from id
+			local msg = message.content
+			msg = msg:gsub("<@%d->", function(id) --  nickname from id
 				return "@" .. getDiscordNick(id)
 			end)
-			message.content = message.content:gsub("<(:.-:)%d->", function(id) -- format emotes
+			msg = msg:gsub("<(:.-:)%d->", function(id) -- format emotes
 				return id
 			end)
-			c:say("#metastruct", "<" .. message.author.username .. "> " .. message.content .. attachments)
+			c:say("#metastruct", "<" .. message.author.username .. "> " .. msg .. attachments)
 		end
 	end
 
