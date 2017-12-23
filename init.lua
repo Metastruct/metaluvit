@@ -65,15 +65,16 @@ local wlit = weblit.app
 ]]
 
 local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#metastruct"}})
+local guild
+local channel
 
 client:on('ready', function()
+	guild = client:getGuild(serverid)
+	channel = guild:getChannel(channelid)
 	print('Logged in as '.. client.user.username)
 end)
 
 client:on('messageCreate', function(message)
-	local guild = client:getGuild(serverid)
-	local channel = guild:getChannel(channelid)
-	
 	if message.channel == channel and message.author ~= client.user then
 		if message.content:starts(".") then
 			c:say("#metastruct", "Command call requested by "..message.author.username..":")
@@ -94,8 +95,6 @@ c:on ("message", function (from, to, msg)
 	if(from ~= "M" and to == "#metastruct") then
 		--wbclient:setName(from)
 		coroutine.wrap(function()
-			local guild = client:getGuild(serverid)
-			local channel = guild:getChannel(channelid)
 			channel:send("**<"..from..">** "..tostring(IRC.Formatting.strip(msg)))
 		end)()
 	end
