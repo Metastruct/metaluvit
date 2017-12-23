@@ -24,7 +24,6 @@ function string.ends(String,End)
 end
 
 --[[
-local WebSocket = require('websocket')
 local json = require('json')
 local weblit = require('weblit')
 
@@ -55,20 +54,6 @@ local wlit = weblit.app
 		res.headers["Content-Type"] = "text/plain"
 	end)
 	.start()
-    
-local WS = WebSocket.server.new():listen(20122)
-
-WS:on('connect', function(client)
-	client:send("Received an connection, waiting for messages...")
-end)
-
-WS:on('data', function(client, message)
-	print(message)
-end)
-
-WS:on('disconnect', function(client)
-	print("Client disconnected.")
-end)
 ]]
 
 local c = IRC:new ("irc.3kv.in", "W1C0P33-2", {auto_connect=true, auto_join={"#metastruct"}})
