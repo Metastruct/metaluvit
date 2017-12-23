@@ -80,7 +80,9 @@ client:on('messageCreate', function(message)
 			c:say("#metastruct", "Command call requested by "..message.author.username..":")
 			c:say("#metastruct", message.content)
 		else
-			c:say("#metastruct", "<"..message.author.username.."> "..message.content)
+			local attachments = message.attachment
+			attachments = attachments and table.concat(attachments, ", ") or ""
+			c:say("#metastruct", "<"..message.author.username.."> "..message.content .. attachments)
 		end
 	end
 	
