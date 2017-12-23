@@ -93,7 +93,8 @@ end)
 client:on("messageCreate", function(message)
 	if message.channel == channel and message.author ~= client.user then
 		if message.content:starts(".") then
-			c:say("#metastruct", "Command call requested by " .. message.author.username .. ":" .. message.content)
+			c:say("#metastruct", "Command call requested by " .. message.author.username .. ":")
+			c:say("#metastruct", message.content)
 		else
 			local hasAttachments = message.attachment
 			local attachments = ""
