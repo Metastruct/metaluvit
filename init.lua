@@ -153,7 +153,7 @@ c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
 	if (from ~= "Discord" and to == "#metastruct") then
-		coroutine.wrap(function() HandleIRC(from, to, msg) end)
+		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
 end)
