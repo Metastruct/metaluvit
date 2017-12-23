@@ -68,6 +68,11 @@ local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"
 local guild
 local channel
 
+local function getDiscordNick(id)
+	local usr = client:getUser(id)
+	return usr and usr.name or "UserNotFound"
+end
+
 client:on("ready", function()
 	guild = client:getGuild(serverid)
 	channel = guild:getChannel(channelid)
@@ -92,6 +97,12 @@ client:on("messageCreate", function(message)
 					attachments = hasAttachments.url
 				end
 			end
+			message.content = message.content:gsub("<@%d->", function(id) --  nickname from id
+				return "@" .. getDiscordNick(id)
+			end)
+			message.content = message.content:gsub("<(:.-:)%d->", function(id) -- format emotes
+				return id
+			end)
 			c:say("#metastruct", "<" .. message.author.username .. "> " .. message.content .. attachments)
 		end
 	end
