@@ -72,7 +72,7 @@ local channel
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
-		if obj.id == id then
+		if obj._id == id then
 			return true end
 		end)
 	return usr and usr.name or "UserNotFound"
