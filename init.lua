@@ -143,6 +143,11 @@ c:on ("message", function (from, to, msg)
 			if from:find"meta[0-3]" and safemessage:find"^#" then
 				id = ""
 			end
+			-- Discord Markdown escape
+			safemessage = safemessage:gsub("`", "\\`")
+			safemessage = safemessage:gsub("_", "\\_")
+			safemessage = safemessage:gsub("*", "\\*")
+
 			channel:send(id .. safemessage)
 		end)()
 	end
