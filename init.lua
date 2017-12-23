@@ -72,16 +72,14 @@ local channel
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
-		if obj._id == id then
-			return true end
+		return obj.id == id
 		end)
 	return usr and usr.name or "UserNotFound"
 end
 
 local function findDiscordUserID(name)
 	local usr = guild.members:find(function(obj)
-		if obj.name == name then
-			return true end
+		return obj.name == name
 		end)
 	return usr and usr.id
 end
@@ -111,7 +109,7 @@ client:on("messageCreate", function(message)
 				end
 			end
 			local msg = message.content
-			msg = msg:gsub("<@%d->", function(id) --  nickname from id
+			msg = msg:gsub("<@(%d)->", function(id) --  nickname from id
 				return "@" .. getDiscordNick(id)
 			end)
 			msg = msg:gsub("<(:.-:)%d->", function(id) -- format emotes
