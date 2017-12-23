@@ -80,7 +80,7 @@ local function findDiscordUserID(name)
 		if obj.name == name then
 			return true end
 		end)
-	return usr
+	return usr and usr.id
 end
 
 client:on("ready", function()
@@ -130,8 +130,8 @@ c:on ("message", function (from, to, msg)
 		--wbclient:setName(from)
 		coroutine.wrap(function()
 			local id = "**<" .. from .. ">** "
-			if string.match(msg, "@%a+") then
-				for mention in string.gmatch( msg, "@(%a+)") do
+			if msg:match("@%a+") then
+				for mention in msg:gmatch("@(%a+)") do
 					local uid = findDiscordUserID(mention)
 					if uid then
 						msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
