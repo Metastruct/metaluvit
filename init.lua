@@ -20,7 +20,9 @@ if not serverid or not channelid then
 end
 
 local discordia = require("discordia")
-local client = discordia.Client()
+local client = discordia.Client {
+	cacheAllMembers = true,
+}
 local IRC = require ("irc")
 
 function string.starts(String,Start)
@@ -73,6 +75,14 @@ local function getDiscordNick(id)
 	return usr and usr.name or "UserNotFound"
 end
 
+local function findDiscordUserID(name)
+	local usr = guild.members:find(function(obj)
+		if obj.name == name then
+			return true end
+		end)
+	return usr
+end
+
 client:on("ready", function()
 	guild = client:getGuild(serverid)
 	channel = guild:getChannel(channelid)
@@ -119,6 +129,14 @@ c:on ("message", function (from, to, msg)
 		--wbclient:setName(from)
 		coroutine.wrap(function()
 			local id = "**<" .. from .. ">** "
+			if string.match(text, "@%a+") then
+				for mention in string.gmatch( text, "@(%a+)") do
+					local uid = findDiscordUserID(mention)
+					if uid then
+						msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
+					end
+				end
+			end
 			local safemessage = tostring(IRC.Formatting.strip(msg))
 			if from:find"meta[0-3]" and safemessage:find"^#" then
 				id = ""
