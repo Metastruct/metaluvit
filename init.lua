@@ -9,6 +9,23 @@
     homepage = "https://metastruct.net"
   ]]
   
+local serverid = os.getenv("DISCORDGUILD")
+local channelid = os.getenv("DISCORDCHANNEL")
+local discordia = require('discordia')
+local client = discordia.Client()
+local IRC=require ('irc')
+
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
+function string.ends(String,End)
+   return End=='' or string.sub(String,-string.len(End))==End
+end
+
+--[[
+local WebSocket = require('websocket')
+local json = require('json')
 local weblit = require('weblit')
 
 local wlit = weblit.app
@@ -20,7 +37,8 @@ local wlit = weblit.app
 
 
 	.websocket({
-	  path = "/v2/socket"
+	  path = "/v2/socket",
+	  protocol = "virgo/2.0"
 	}, function (req, read, write)
 	  -- Log the request headers
 	  p(req)
@@ -37,24 +55,58 @@ local wlit = weblit.app
 		res.headers["Content-Type"] = "text/plain"
 	end)
 	.start()
-  
+    
+local WS = WebSocket.server.new():listen(20122)
 
-local discordia = require('discordia')
-local client = discordia.Client()
+WS:on('connect', function(client)
+	client:send("Received an connection, waiting for messages...")
+end)
+
+WS:on('data', function(client, message)
+	print(message)
+end)
+
+WS:on('disconnect', function(client)
+	print("Client disconnected.")
+end)
+]]
+
+local c = IRC:new ("irc.3kv.in", "W1C0P33-2", {auto_connect=true, auto_join={"#metastruct"}})
 
 client:on('ready', function()
 	print('Logged in as '.. client.user.username)
 end)
 
 client:on('messageCreate', function(message)
+	local guild = client:getGuild(serverid)
+	local channel = guild:getChannel(channelid)
+	
+	if message.channel == channel and message.author.username ~= client.user.username and message.author.discriminator ~= client.user.discriminator then
+		if message.content:starts(".") then
+			c:say("#metastruct", "Command call requested by "..message.author.username..":")
+			c:say("#metastruct", message.content)
+		else
+			c:say("#metastruct", "<"..message.author.username.."> "..message.content)
+		end
+	end
+	
 	if message.content == '!ping' then
 		message.channel:send('Pong!')
 	end
 end)
 
-local IRC=require ('irc')
-
-local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#main"}})
+c:on ("message", function (from, to, msg)
+	print ("["..to.."] <"..from.."> "..IRC.Formatting.convert(msg))
+	
+	if(from ~= "M" and to == "#metastruct") then
+		--wbclient:setName(from)
+		coroutine.wrap(function()
+			local guild = client:getGuild(serverid)
+			local channel = guild:getChannel(channelid)
+			channel:send("**<"..from..">** "..tostring(IRC.Formatting.strip(msg)))
+		end)()
+	end
+end)
 
 c:on ("connecting", function(nick, server, username, real_name)
         print(string.format("Connecting to %s as %s...", server, nick))
@@ -127,9 +179,6 @@ c:on ("names", function(channel)
 end)
 c:on ("pm", function (from, msg)
         print ("<"..from.."> "..IRC.Formatting.convert(msg))
-end)
-c:on ("message", function (from, to, msg)
-        print ("["..to.."] <"..from.."> "..IRC.Formatting.convert(msg))
 end)
 c:on ("disconnect", function (reason)
         print (string.format("Disconnected: %s", reason))
