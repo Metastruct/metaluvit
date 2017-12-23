@@ -95,7 +95,12 @@ c:on ("message", function (from, to, msg)
 	if(from ~= "M" and to == "#metastruct") then
 		--wbclient:setName(from)
 		coroutine.wrap(function()
-			channel:send("**<"..from..">** "..tostring(IRC.Formatting.strip(msg)))
+			local id = "**<"..from..">** "
+			local safemessage = tostring(IRC.Formatting.strip(msg))
+			if from:find'meta[0-3]' and safemessage:find'^#' then
+				id = ""
+			end
+			channel:send(id..safemessage)
 		end)()
 	end
 end)
