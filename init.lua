@@ -143,7 +143,7 @@ local function HandleIRC(from, to, msg)
 	end
 	-- Discord Markdown escape
 	safemessage = safemessage:gsub("`", "\\`")
-	safemessage = safemessage:gsub("_", "\\_")
+	--safemessage = safemessage:gsub("_", "\\_") -- breaks urls
 	safemessage = safemessage:gsub("*", "\\*")
 
 	channel:send(id .. safemessage)
