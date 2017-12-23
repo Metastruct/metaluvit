@@ -64,7 +64,7 @@ local wlit = weblit.app
         .start()
 ]]
 
-local c = IRC:new ("irc.3kv.in", "M", {auto_connect = true, auto_join = {"#metastruct"}})
+local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
 local channel
 
