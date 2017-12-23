@@ -129,8 +129,8 @@ c:on ("message", function (from, to, msg)
 		--wbclient:setName(from)
 		coroutine.wrap(function()
 			local id = "**<" .. from .. ">** "
-			if string.match(text, "@%a+") then
-				for mention in string.gmatch( text, "@(%a+)") do
+			if string.match(msg, "@%a+") then
+				for mention in string.gmatch( msg, "@(%a+)") do
 					local uid = findDiscordUserID(mention)
 					if uid then
 						msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
