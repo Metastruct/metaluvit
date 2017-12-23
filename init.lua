@@ -115,6 +115,9 @@ client:on("messageCreate", function(message)
 			msg = msg:gsub("<(:.-:)%d->", function(id) -- format emotes
 				return id
 			end)
+			msg = msg:gsub("<(a:.-:)%d->", function(id) -- format animated emotes
+				return id
+			end)
 			c:say("#metastruct", "<" .. message.author.username .. "> " .. msg .. attachments)
 		end
 	end
@@ -124,35 +127,36 @@ client:on("messageCreate", function(message)
 	end
 end)
 
+local function HandleIRC(from, to, msg)
+	local id = "**<" .. from .. ">** "
+	if msg:match("@%w+") then
+		for mention in msg:gmatch("@(%w+)") do
+			local uid = findDiscordUserID(mention)
+			if uid then
+				msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
+			end
+		end
+	end
+	local safemessage = tostring(IRC.Formatting.strip(msg))
+	if from:find"meta[0-3]" and safemessage:find"^#" then
+		id = ""
+	end
+	-- Discord Markdown escape
+	safemessage = safemessage:gsub("`", "\\`")
+	safemessage = safemessage:gsub("_", "\\_")
+	safemessage = safemessage:gsub("*", "\\*")
+
+	channel:send(id .. safemessage)
+end
+
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
 	if (from ~= "Discord" and to == "#metastruct") then
-		--wbclient:setName(from)
-		coroutine.wrap(function()
-			local id = "**<" .. from .. ">** "
-			if msg:match("@%w+") then
-				for mention in msg:gmatch("@(%w+)") do
-					local uid = findDiscordUserID(mention)
-					if uid then
-						msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
-					end
-				end
-			end
-			local safemessage = tostring(IRC.Formatting.strip(msg))
-			if from:find"meta[0-3]" and safemessage:find"^#" then
-				id = ""
-			end
-			-- Discord Markdown escape
-			safemessage = safemessage:gsub("`", "\\`")
-			safemessage = safemessage:gsub("_", "\\_")
-			safemessage = safemessage:gsub("*", "\\*")
-
-			channel:send(id .. safemessage)
-		end)()
+		coroutine.wrap(function() HandleIRC(from, to, msg) end)
 	end
-end)
 
+end)
 c:on ("connecting", function(nick, server, username, real_name)
 	print(string.format("Connecting to %s as %s...", server, nick))
 end)
