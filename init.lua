@@ -11,6 +11,14 @@
   
 local serverid = os.getenv("DISCORDGUILD")
 local channelid = os.getenv("DISCORDCHANNEL")
+
+if not serverid or not channelid then
+	p "Please setup env. variables: DISCORDGUILD, DISCORDCHANNEL."
+	p "One of them is not set up."
+	p "Crashing..."
+	process.exit(1)
+end
+
 local discordia = require('discordia')
 local client = discordia.Client()
 local IRC=require ('irc')
