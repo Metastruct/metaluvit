@@ -74,7 +74,7 @@ client:on('messageCreate', function(message)
 	local guild = client:getGuild(serverid)
 	local channel = guild:getChannel(channelid)
 	
-	if message.channel == channel and message.author.username ~= client.user.username and message.author.discriminator ~= client.user.discriminator then
+	if message.channel == channel and message.author ~= client.user then
 		if message.content:starts(".") then
 			c:say("#metastruct", "Command call requested by "..message.author.username..":")
 			c:say("#metastruct", message.content)
