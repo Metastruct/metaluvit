@@ -80,6 +80,13 @@ client:on("messageCreate", function(message)
                         c:say("#metastruct", "Command call requested by " .. message.author.username .. ":")
                         c:say("#metastruct", message.content)
                 else
+                        local hasAttachments = message.attachment
+                        local attachments = ""
+                        if hasAttachments then
+                                for i = 1, #hasAttachments do
+                                attachments = attachments .. hasAttachments[i].url .. ", "
+                                end
+                        end
                         c:say("#metastruct", "<" .. message.author.username .. "> " .. message.content .. attachments)
                 end
         end
