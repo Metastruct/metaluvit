@@ -9,6 +9,30 @@
     homepage = "https://metastruct.net"
   ]]
   
+local serverid = os.getenv("DISCORDGUILD")
+local channelid = os.getenv("DISCORDCHANNEL")
+
+if not serverid or not channelid then
+	p "Please setup env. variables: DISCORDGUILD, DISCORDCHANNEL."
+	p "One of them is not set up."
+	p "Crashing..."
+	process.exit(1)
+end
+
+local discordia = require('discordia')
+local client = discordia.Client()
+local IRC=require ('irc')
+
+function string.starts(String,Start)
+   return string.sub(String,1,string.len(Start))==Start
+end
+
+function string.ends(String,End)
+   return End=='' or string.sub(String,-string.len(End))==End
+end
+
+--[[
+local json = require('json')
 local weblit = require('weblit')
 
 local wlit = weblit.app
@@ -20,7 +44,8 @@ local wlit = weblit.app
 
 
 	.websocket({
-	  path = "/v2/socket"
+	  path = "/v2/socket",
+	  protocol = "virgo/2.0"
 	}, function (req, read, write)
 	  -- Log the request headers
 	  p(req)
@@ -37,24 +62,43 @@ local wlit = weblit.app
 		res.headers["Content-Type"] = "text/plain"
 	end)
 	.start()
-  
+]]
 
-local discordia = require('discordia')
-local client = discordia.Client()
+local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#metastruct"}})
+local guild
+local channel
 
 client:on('ready', function()
+	guild = client:getGuild(serverid)
+	channel = guild:getChannel(channelid)
 	print('Logged in as '.. client.user.username)
 end)
 
 client:on('messageCreate', function(message)
+	if message.channel == channel and message.author ~= client.user then
+		if message.content:starts(".") then
+			c:say("#metastruct", "Command call requested by "..message.author.username..":")
+			c:say("#metastruct", message.content)
+		else
+			c:say("#metastruct", "<"..message.author.username.."> "..message.content)
+		end
+	end
+	
 	if message.content == '!ping' then
 		message.channel:send('Pong!')
 	end
 end)
 
-local IRC=require ('irc')
-
-local c = IRC:new ("irc.3kv.in", "M", {auto_connect=true, auto_join={"#main"}})
+c:on ("message", function (from, to, msg)
+	print ("["..to.."] <"..from.."> "..IRC.Formatting.convert(msg))
+	
+	if(from ~= "M" and to == "#metastruct") then
+		--wbclient:setName(from)
+		coroutine.wrap(function()
+			channel:send("**<"..from..">** "..tostring(IRC.Formatting.strip(msg)))
+		end)()
+	end
+end)
 
 c:on ("connecting", function(nick, server, username, real_name)
         print(string.format("Connecting to %s as %s...", server, nick))
@@ -127,9 +171,6 @@ c:on ("names", function(channel)
 end)
 c:on ("pm", function (from, msg)
         print ("<"..from.."> "..IRC.Formatting.convert(msg))
-end)
-c:on ("message", function (from, to, msg)
-        print ("["..to.."] <"..from.."> "..IRC.Formatting.convert(msg))
 end)
 c:on ("disconnect", function (reason)
         print (string.format("Disconnected: %s", reason))
