@@ -200,7 +200,7 @@ Formatting.convert = function(text)
 	for colorstring, foreground, background in string.gmatch(text, "(" .. Formatting.Colors.START.."(%d?%d?),?(%d?%d?)" .. ")") do
 		foreground = Formatting.ForegroundColorConversion[Formatting.normalize_color_code(foreground)]
 		background = Formatting.BackgroundColorConversion[Formatting.normalize_color_code(background)]
-		local conversion = ANSI.sgr(foreground .. (background and (";" .. background) or ""))
+		local conversion = ANSI.sgr((foreground or "") .. (background and (";" .. background) or ""))
 		table.insert(replacements, {needle=colorstring, replacement=conversion})
 	end
 	for _,replacement in ipairs(replacements) do
