@@ -97,7 +97,7 @@ client:on("messageCreate", function(message)
 			c:say("#metastruct", message.content)
 		else
 			local hasAttachments = message.attachment
-			local attachments = ""
+			local attachments = "\n"
 			if hasAttachments then
 				if message.attachments then
 					local tbl = message.attachments
