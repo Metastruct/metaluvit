@@ -102,7 +102,7 @@ client:on("messageCreate", function(message)
 				if message.attachments then
 					local tbl = message.attachments
 					for i = 1, #tbl do
-						attachments = attachments .. tbl[i].url .. ", "
+						attachments = attachments .. tbl[i].url .. i > 1 and  " , " or ""
 					end
 				else
 					attachments = hasAttachments.url
