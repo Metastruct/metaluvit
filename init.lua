@@ -118,7 +118,7 @@ client:on("messageCreate", function(message)
 			msg = msg:gsub("<a(:.-:)%d->", function(id) -- format animated emotes
 				return id
 			end)
-			c:say("#metastruct", message.author.username .. "> " .. msg .. attachments)
+			c:say("#metastruct", "[" .. message.author.username .. "] " .. msg .. attachments)
 		end
 	end
 
