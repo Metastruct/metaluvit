@@ -1,14 +1,3 @@
-  --[[lit-meta
-	name = "metaluvit"
-	version = "0.0.1"
-	dependencies = {}
-	description = "Metastruct Luvit Based Daemon"
-	tags = { "metastruct", "chat", "luvit" }
-	license = "MIT"
-	author = { name = "Metastruct", email = "metastruct@metastruct.uk.to" }
-	homepage = "https://metastruct.net"
-  ]]
-
 local serverid = os.getenv("DISCORDGUILD")
 local channelid = os.getenv("DISCORDCHANNEL")
 
