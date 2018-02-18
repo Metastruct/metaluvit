@@ -80,6 +80,7 @@ config.irc = c
 config.client = client
 
 require("./handlers/cmd.lua")(config)
+--require("./handlers/process.lua")(config)
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
@@ -131,10 +132,6 @@ client:on("messageCreate", function(message)
 			end)
 			c:say("#test", "[" .. message.author.username .. "] " .. msg .. attachments)
 		end
-	end
-
-	if message.content == "!ping" then
-		message.channel:send("Pong!")
 	end
 end)
 

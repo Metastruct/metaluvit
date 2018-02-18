@@ -7,26 +7,6 @@ local discordia = require('discordia')
 
 local fs = require('fs')
 
-local function findRole(member,groups)
-    local roles = member.roles[1]
-    if not roles then
-        return false, false    
-    end
-    local dev = false
-    local admin = false
-
-    for k,v in next,roles do
-        if(v == groups.devs) then
-            dev = true
-        end
-        if(v == groups.admins) then
-            admin = true
-        end
-    end
-
-    return dev, admin
-end
-
 return function(object)
     local client = object.client
     object.commands = {}
@@ -66,12 +46,11 @@ return function(object)
             for cmd,obj in pairs(v) do
                 local combine = object.prefix..cmd
                 if msg.content:StartWith(combine.." ") or msg.content == combine then
-                    local dev, admin = findRole(msg.member,object.groups)
-                    if not dev then
+                    if not msg.member:hasRole(object.groups.devs) then
                         msg:reply("You cannot access this command!")
                         return
                     end
-                    if(obj.admin and not admin) then
+                    if(obj.admin and not msg.member:hasRole(object.groups.admins)) then
                         msg:reply("This command is for `Administrator` role's users only.")
                         return
                     end
