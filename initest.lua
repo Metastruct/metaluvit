@@ -1,20 +1,21 @@
-  --[[lit-meta
-	name = "metaluvit"
-	version = "0.0.1"
-	dependencies = {}
-	description = "Metastruct Luvit Based Daemon"
-	tags = { "metastruct", "chat", "luvit" }
-	license = "MIT"
-	author = { name = "Metastruct", email = "metastruct@metastruct.uk.to" }
-	homepage = "https://metastruct.net"
-  ]]
+
+--[[lit-meta
+name = "metaluvit"
+version = "0.0.1"
+dependencies = {}
+description = "test Luvit Based Daemon"
+tags = { "test", "chat", "luvit" }
+license = "MIT"
+author = { name = "test", email = "test@test.uk.to" }
+homepage = "https://test.net"
+]]
 
 _G.require = require
 setfenv(1, _G)
 
 require("./helpers/util.lua")
 
-local config = require("config")
+_G.config = require("config")
 local serverid = config.guildid
 local channelid = config.channelid
 
@@ -52,17 +53,17 @@ local wlit = weblit.app
 
 
 		.websocket({
-		  path = "/v2/socket",
-		  protocol = "virgo/2.0"
+		path = "/v2/socket",
+		protocol = "virgo/2.0"
 		}, function (req, read, write)
-		  -- Log the request headers
-		  p(req)
-		  -- Log and echo all messages
-		  for message in read do
+		-- Log the request headers
+		p(req)
+		-- Log and echo all messages
+		for message in read do
 				write(message)
-		  end
-		  -- End the stream
-		  write()
+		end
+		-- End the stream
+		write()
 		end)
 		.route({ path = "/:name"}, function (req, res)
 				res.body = req.method .. " - " .. req.params.name .. "\n"
@@ -76,11 +77,11 @@ local c = IRC:new ("irc.3kv.in", "Discord_INDEV", {auto_connect = true, auto_joi
 local guild
 local channel
 
-config.irc = c
-config.client = client
+_G.config.enabled = true
+_G.config.irc = c
+_G.config.client = client
 
 require("./handlers/cmd.lua")(config)
---require("./handlers/process.lua")(config)
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
@@ -103,7 +104,7 @@ client:on("ready", function()
 end)
 
 client:on("messageCreate", function(message)
-	if message.channel == channel and message.author ~= client.user then
+	if message.channel == channel and message.author ~= client.user and config.enabled == true then
 		if message.content:starts(".") and message.content:len() > 1 then
 			c:say("#test", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
 			c:say("#test", message.content)
@@ -160,7 +161,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#test") then
+	if (from ~= "Discord" and to == "#test" and config.enabled == true) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 

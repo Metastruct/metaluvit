@@ -57,7 +57,7 @@ return function(object)
                     local args = string.Split(msg.content, " ")
                     table.remove(args,1)
                     local line = msg.content:sub((combine.." "):len(),msg.content:len())
-                    local success,err = obj.callback(msg,args,line)
+                    local success,err = obj.callback(msg,args,line,object)
                 end
             end
         end

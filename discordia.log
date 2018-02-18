@@ -1,0 +1,56 @@
+2018-02-18 18:31:54 | [INFO]    | Discordia 2.2.0
+2018-02-18 18:31:54 | [INFO]    | Connecting to Discord...
+2018-02-18 18:31:54 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 18:31:54 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 18:31:54 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 18:31:54 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-999f)
+2018-02-18 18:31:55 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-999f, discord-sessions-prd-1-6)
+2018-02-18 18:33:25 | [INFO]    | Discordia 2.2.0
+2018-02-18 18:33:25 | [INFO]    | Connecting to Discord...
+2018-02-18 18:33:26 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 18:33:26 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 18:33:26 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 18:33:26 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-cbl7)
+2018-02-18 18:33:26 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-cbl7, discord-sessions-prd-1-19)
+2018-02-18 22:18:01 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:18:01 | [INFO]    | Connecting to Discord...
+2018-02-18 22:18:01 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:18:01 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:18:02 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:18:02 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-306h)
+2018-02-18 22:18:02 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-306h, discord-sessions-prd-1-4)
+2018-02-18 22:20:32 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:20:32 | [INFO]    | Connecting to Discord...
+2018-02-18 22:20:32 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:20:32 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:20:32 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:20:32 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-7gxn)
+2018-02-18 22:20:32 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-7gxn, discord-sessions-prd-1-6)
+2018-02-18 22:21:31 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:21:31 | [INFO]    | Connecting to Discord...
+2018-02-18 22:21:31 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:21:31 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:21:32 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:21:32 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-kw54)
+2018-02-18 22:21:32 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-kw54, discord-sessions-prd-1-10)
+2018-02-18 22:22:48 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:22:48 | [INFO]    | Connecting to Discord...
+2018-02-18 22:22:49 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:22:49 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:22:49 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:22:49 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-1tgc)
+2018-02-18 22:22:49 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-1tgc, discord-sessions-prd-1-8)
+2018-02-18 22:24:02 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:24:02 | [INFO]    | Connecting to Discord...
+2018-02-18 22:24:03 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:24:03 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:24:03 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:24:03 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-vmtk)
+2018-02-18 22:24:03 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-vmtk, discord-sessions-prd-1-12)
+2018-02-18 22:24:41 | [INFO]    | Discordia 2.2.0
+2018-02-18 22:24:41 | [INFO]    | Connecting to Discord...
+2018-02-18 22:24:41 | [INFO]    | Authenticated as JDS Relay#6963
+2018-02-18 22:24:41 | [INFO]    | Launching shard 0 (1 out of 1)...
+2018-02-18 22:24:42 | [INFO]    | Shard 0 : Connected to wss://gateway.discord.gg
+2018-02-18 22:24:42 | [INFO]    | Shard 0 : Received HELLO (gateway-prd-main-dlcf)
+2018-02-18 22:24:42 | [INFO]    | Shard 0 : Received READY (gateway-prd-main-dlcf, discord-sessions-prd-1-3)

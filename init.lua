@@ -6,7 +6,7 @@ dependencies = {}
 description = "Metastruct Luvit Based Daemon"
 tags = { "metastruct", "chat", "luvit" }
 license = "MIT"
-author = { name = "Metastruct", email = "metastruct@metastruct.uk.to" }
+author = { name = "metastruct", email = "metastruct@metastruct.uk.to" }
 homepage = "https://metastruct.net"
 ]]
 
@@ -15,7 +15,7 @@ setfenv(1, _G)
 
 require("./helpers/util.lua")
 
-local config = require("config")
+_G.config = require("config")
 local serverid = config.guildid
 local channelid = config.channelid
 
@@ -77,8 +77,9 @@ local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"
 local guild
 local channel
 
-config.irc = c
-config.client = client
+_G.config.enabled = true
+_G.config.irc = c
+_G.config.client = client
 
 require("./handlers/cmd.lua")(config)
 
@@ -103,7 +104,7 @@ client:on("ready", function()
 end)
 
 client:on("messageCreate", function(message)
-	if message.channel == channel and message.author ~= client.user then
+	if message.channel == channel and message.author ~= client.user and config.enabled == true then
 		if message.content:starts(".") and message.content:len() > 1 then
 			c:say("#metastruct", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
 			c:say("#metastruct", message.content)
@@ -160,7 +161,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct") then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
