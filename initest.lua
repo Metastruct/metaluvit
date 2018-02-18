@@ -1,14 +1,13 @@
-
---[[lit-meta
-name = "metaluvit"
-version = "0.0.1"
-dependencies = {}
-description = "Metastruct Luvit Based Daemon"
-tags = { "metastruct", "chat", "luvit" }
-license = "MIT"
-author = { name = "Metastruct", email = "metastruct@metastruct.uk.to" }
-homepage = "https://metastruct.net"
-]]
+  --[[lit-meta
+	name = "metaluvit"
+	version = "0.0.1"
+	dependencies = {}
+	description = "Metastruct Luvit Based Daemon"
+	tags = { "metastruct", "chat", "luvit" }
+	license = "MIT"
+	author = { name = "Metastruct", email = "metastruct@metastruct.uk.to" }
+	homepage = "https://metastruct.net"
+  ]]
 
 _G.require = require
 setfenv(1, _G)
@@ -53,17 +52,17 @@ local wlit = weblit.app
 
 
 		.websocket({
-		path = "/v2/socket",
-		protocol = "virgo/2.0"
+		  path = "/v2/socket",
+		  protocol = "virgo/2.0"
 		}, function (req, read, write)
-		-- Log the request headers
-		p(req)
-		-- Log and echo all messages
-		for message in read do
+		  -- Log the request headers
+		  p(req)
+		  -- Log and echo all messages
+		  for message in read do
 				write(message)
-		end
-		-- End the stream
-		write()
+		  end
+		  -- End the stream
+		  write()
 		end)
 		.route({ path = "/:name"}, function (req, res)
 				res.body = req.method .. " - " .. req.params.name .. "\n"
@@ -73,7 +72,7 @@ local wlit = weblit.app
 		.start()
 ]]
 
-local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
+local c = IRC:new ("irc.3kv.in", "Discord_INDEV", {auto_connect = true, auto_join = {"#test"}})
 local guild
 local channel
 
@@ -105,8 +104,8 @@ end)
 client:on("messageCreate", function(message)
 	if message.channel == channel and message.author ~= client.user then
 		if message.content:starts(".") and message.content:len() > 1 then
-			c:say("#metastruct", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
-			c:say("#metastruct", message.content)
+			c:say("#test", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
+			c:say("#test", message.content)
 		else
 			local hasAttachments = message.attachment
 			local attachments = "\n"
@@ -130,8 +129,12 @@ client:on("messageCreate", function(message)
 			msg = msg:gsub("<a(:.-:)%d->", function(id) -- format animated emotes
 				return id
 			end)
-			c:say("#metastruct", "[" .. message.author.username .. "] " .. msg .. attachments)
+			c:say("#test", "[" .. message.author.username .. "] " .. msg .. attachments)
 		end
+	end
+
+	if message.content == "!ping" then
+		message.channel:send("Pong!")
 	end
 end)
 
@@ -160,7 +163,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct") then
+	if (from ~= "Discord" and to == "#test") then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
