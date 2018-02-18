@@ -80,7 +80,7 @@ local channel
 config.irc = c
 config.client = client
 
---require("./handlers/cmd.lua")(config)
+require("./handlers/cmd.lua")(config)
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
