@@ -9,6 +9,9 @@ local fs = require('fs')
 
 local function findRole(member,groups)
     local roles = member.roles[1]
+    if not roles then
+        return false, false
+    end
     local dev = false
     local admin = false
 
