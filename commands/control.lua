@@ -4,6 +4,7 @@ return {
         callback = function(msg,args,line,obj)
             obj.irc:say("#metastruct", "brb in idk minutes (going into the maintenance)")
             _G.config.enabled = false
+            msg:reply(":white_check_mark:")
         end
     },
     enable = {
@@ -11,6 +12,7 @@ return {
         callback = function(msg,args,line,obj)
             _G.config.enabled = true
             obj.irc:say("#metastruct", "back from maintenance")
+            msg:reply(":white_check_mark:")
         end
     }
 }
