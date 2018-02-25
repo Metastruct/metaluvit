@@ -122,7 +122,7 @@ client:on("messageCreate", function(message)
 				end
 			end
 			local msg = message.content
-			msg = msg:gsub("<@(%d-)>", function(id) --  nickname from id
+			msg = msg:gsub("<@!?(%d-)>", function(id) --  nickname from id
 				return "@" .. getDiscordNick(id)
 			end)
 			msg = msg:gsub("<(:.-:)%d->", function(id) -- format emotes
