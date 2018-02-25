@@ -125,10 +125,7 @@ client:on("messageCreate", function(message)
 			msg = msg:gsub("<@!?(%d-)>", function(id) --  nickname from id
 				return "@" .. getDiscordNick(id)
 			end)
-			msg = msg:gsub("<(:.-:)%d->", function(id) -- format emotes
-				return id
-			end)
-			msg = msg:gsub("<a(:.-:)%d->", function(id) -- format animated emotes
+			msg = msg:gsub("<a?(:.-:)%d->", function(id) -- format emotes
 				return id
 			end)
 			c:say("#metastruct", "[" .. message.author.username .. "] " .. msg .. attachments)
