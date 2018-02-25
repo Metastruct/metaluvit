@@ -10,7 +10,7 @@ return {
         "luvit/require",
         "luvit/pretty-print",
         "SinisterRectus/discordia@2.2.0",
-        "squeek502/irc@0.3.3",
+        "squeek502/irc@0.3.4",
         "creationix/weblit@3.1.0"
     }
 }
