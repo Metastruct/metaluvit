@@ -40,7 +40,7 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
---[[
+
 local json = require("json")
 local weblit = require("weblit")
 
@@ -71,8 +71,7 @@ local wlit = weblit.app
 				res.headers["Content-Type"] = "text/plain"
 		end)
 		.start()
-]]
-
+		
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
 local channel
