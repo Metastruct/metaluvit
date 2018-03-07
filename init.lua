@@ -40,38 +40,33 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
+require('weblit-websocket')
+local wlit = require('weblit-app')
+	.bind({host = "0.0.0.0", port = 20122})
 
-local json = require("json")
-local weblit = require("weblit")
+	.use(require('weblit-logger'))
+  	.use(require('weblit-auto-headers'))
 
-local wlit = weblit.app
-		.bind({host = "0.0.0.0", port = 20122})
-
-		.use(weblit.logger)
-		.use(weblit.autoHeaders)
-		.use(weblit.websocket)
-
-
-		.websocket({
-		path = "/v2/socket",
-		protocol = "virgo/2.0"
-		}, function (req, read, write)
-		-- Log the request headers
-		p(req)
-		-- Log and echo all messages
+	.websocket({
+		path = "/v2/socket"
+	}, 
+	function (req, read, write)
+		print("New client")
 		for message in read do
-				write(message)
+			message.mask = nil
+			write(message)
 		end
-		-- End the stream
 		write()
-		end)
-		.route({ path = "/:name"}, function (req, res)
-				res.body = req.method .. " - " .. req.params.name .. "\n"
-				res.code = 200
-				res.headers["Content-Type"] = "text/plain"
-		end)
-		.start()
-		
+		print("Client left")
+	end)
+	.route({ path = "/:name"}, function (req, res)
+			res.body = req.method .. " - " .. req.params.name .. "\n"
+			res.code = 200
+			res.headers["Content-Type"] = "text/plain"
+	end)
+	.start()
+]]
+
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
 local channel
