@@ -46,7 +46,7 @@ _G.status = {
 	["#2"] = {}
 }
 
-local function handleWS(data)
+local function handleWS(data,write)
 	data = json.decode(data)
 	local sts = data.server or "??"
 	if data.status then
@@ -86,6 +86,7 @@ local function handleWS(data)
 			}
 		})
 	end
+	write("OK")
 end
 
 local serverips = {
@@ -121,8 +122,7 @@ local wlit = require('weblit-app')
 
 		for message in read do
 			message.mask = nil
-			handleWS(message)
-			write(message)
+			handleWS(message,write)
 		end
 		write()
 		print("Client left")
