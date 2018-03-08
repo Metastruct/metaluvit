@@ -40,7 +40,6 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
---[[
 require('weblit-websocket')
 local wlit = require('weblit-app')
 	.bind({host = "0.0.0.0", port = 20122})
@@ -66,7 +65,6 @@ local wlit = require('weblit-app')
 			res.headers["Content-Type"] = "text/plain"
 	end)
 	.start()
-]]
 
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
@@ -77,7 +75,6 @@ _G.config.irc = c
 _G.config.client = client
 
 require("./handlers/cmd.lua")(config)
-require("./handlers/socket.lua")(config)
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
