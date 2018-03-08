@@ -48,7 +48,7 @@ _G.status = {
 }
 
 local function handleWS(data,write)
-	if type(data) == string then
+	if type(data) == "string" then
 		data = json.decode(data)
 	end
 	local sts = data.server or "??"
@@ -124,7 +124,7 @@ local wlit = require('weblit-app')
 
 		for message in read do
 			message.mask = nil
-			handleWS(message,write)
+			handleWS(message.payload,write)
 			write(message)
 		end
 		write()
@@ -223,7 +223,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 

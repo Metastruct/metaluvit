@@ -41,14 +41,20 @@ function string.ends(String,End)
 end
 
 local json = require('json')
-
+json.use_lpeg ()
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
 }
 
-local function handleWS(data)
-	data = json.decode(data)
+local function handleWS(data,write)
+	for k,v in pairs(data) do
+		print(k, " - ", v)
+	end
+
+	if type(data) == "string" then
+		data = json.decode(data)
+	end
 	local sts = data.server or "??"
 	if data.status then
 		local tbl = data.status
@@ -122,6 +128,7 @@ local wlit = require('weblit-app')
 
 		for message in read do
 			message.mask = nil
+			handleWS(message,write)
 			write(message)
 		end
 		write()
