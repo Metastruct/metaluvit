@@ -12,7 +12,8 @@ return {
         callback = function(msg,args,line,config)
             local embed = {
                 title = "Status",
-                fields = {}
+                fields = {},
+                color = 0x0275d8
             }
 
             for sv,sts in pairs(status) do

@@ -156,9 +156,9 @@ local function handleWS(data,write)
 					title = data.disconnect.nickname.." has left the server.",
 					description = "Reason: "..data.disconnect.reason,
 					footer = {
-						text = data.disconnect.steamid
+						text = data.disconnect.steamid.." | Server "..sts
 					},
-					color = 0x0275d8
+					color = 0x4BB543
 				}
 			})
 		end)()
@@ -168,11 +168,11 @@ local function handleWS(data,write)
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
-					title = data.disconnect.nickname.." is connecting to the server.",
+					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
-						text = data.disconnect.steamid
+						text = data.connect.steamid.." | Server "..sts
 					},
-					color = 0x4BB543
+					color = 0x0275d8
 				}
 			})
 		end)()
