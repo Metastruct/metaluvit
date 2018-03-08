@@ -40,8 +40,53 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
-local function handleWS(data)
+local json = require('json')
 
+_G.status = {
+	["#1"] = {},
+	["#2"] = {}
+}
+
+local function handleWS(data)
+	data = json.decode(data)
+	local sts = data.server or "??"
+	if data.status then
+		local tbl = data.status
+		_G.status[sts] = tbl
+		if client then
+			client:setGame((status["#1"].players or "??").." players on #1 | "..(status["#2"].players or "??").." players on #2 | !status")
+		end
+	end
+
+	if data.msg then
+		local txt = sts.." "..data.msg.nickname..": "..txt
+		channel:send(txt)
+	end
+
+	if data.disconnect then
+		channel:send({
+			embed = {
+				title = data.disconnect.nickname.." has left the server.",
+				description = "Reason: "..data.disconnect.reason,
+				footer = {
+					text = data.disconnect.steamid
+				},
+				color = 0x0275d8
+			}
+		})
+	end
+
+	if data.connect then
+		channel:send({
+			embed = {
+				title = data.disconnect.nickname.." is connecting to the server.",
+				footer = {
+					text = data.disconnect.steamid
+				},
+				color = 0x4BB543
+			}
+		})
+	end
 end
 
 local serverips = {
@@ -97,7 +142,11 @@ _G.config.enabled = true
 _G.config.irc = c
 _G.config.client = client
 
-require("./handlers/cmd.lua")(config)
+require("./handlers/cmd.lua")(config,function()
+	
+end)
+
+
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
@@ -177,7 +226,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#test" and config.enabled == true) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 

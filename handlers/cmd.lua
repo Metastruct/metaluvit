@@ -7,7 +7,7 @@ local discordia = require('discordia')
 
 local fs = require('fs')
 
-return function(object)
+return function(object,callback)
     local client = object.client
     object.commands = object.commands or {}
 
@@ -64,4 +64,5 @@ return function(object)
             end
         end
     end)
+    callback()
 end
