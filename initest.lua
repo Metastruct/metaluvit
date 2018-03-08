@@ -40,20 +40,17 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
-local json = require('json')
-json.use_lpeg ()
+local json = require('cjson')
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
 }
 
 local function handleWS(data,write)
-	for k,v in pairs(data) do
-		print(k, " - ", v)
-	end
-
+	if data == nil then return end 
+	
 	if type(data) == "string" then
-		data = json.decode(data)
+		data = json.parse(data) or {}
 	end
 	local sts = data.server or "??"
 	if data.status then

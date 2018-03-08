@@ -40,103 +40,11 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
-local json = require('json')
+local json = require('cjson')
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
 }
-
-local function handleWS(data,write)
-	if data == nil then return end 
-	
-	if type(data) == "string" then
-		data = json.decode(data)
-	end
-	local sts = data.server or "??"
-	if data.status then
-		local tbl = data.status
-		_G.status[sts] = tbl
-		if client then
-			client:setGame((status["#1"].players or "??").." players on #1 | "..(status["#2"].players or "??").." players on #2 | !status")
-		end
-	end
-
-	if data.msg then
-		local txt = sts.." "..data.msg.nickname..": "..txt
-		channel:send(txt)
-	end
-
-	if data.disconnect then
-		channel:send({
-			embed = {
-				title = data.disconnect.nickname.." has left the server.",
-				description = "Reason: "..data.disconnect.reason,
-				footer = {
-					text = data.disconnect.steamid
-				},
-				color = 0x0275d8
-			}
-		})
-	end
-
-	if data.connect then
-		channel:send({
-			embed = {
-				title = data.disconnect.nickname.." is connecting to the server.",
-				footer = {
-					text = data.disconnect.steamid
-				},
-				color = 0x4BB543
-			}
-		})
-	end
-end
-
-local serverips = {
-	"195.154.166.219",
-	"94.23.170.2"
-}
-
-require('weblit-websocket')
-local wlit = require('weblit-app')
-	.bind({host = "0.0.0.0", port = 20122})
-
-	.use(require('weblit-logger'))
-  	.use(require('weblit-auto-headers'))
-
-	.websocket({
-		path = "/v2/socket"
-	}, 
-	function (req, read, write)
-		print("New client")
-		print("checking ip...")
-		local here = false
-		for _, serverip in pairs(serverips) do
-			local ip = req.socket:getsockname().ip
-			if ip == serverip or ip == "::1" or ip == "::" or ip == "127.0.0.1" then
-				here = true
-			end
-		end
-
-		if not here then
-			write()
-			print("ok bye")
-		end
-
-		for message in read do
-			message.mask = nil
-			handleWS(message.payload,write)
-			write(message)
-		end
-		write()
-		print("Client left")
-	end)
-	.route({ path = "/:name"}, function (req, res)
-			res.body = req.method .. " - " .. req.params.name .. "\n"
-			res.code = 200
-			res.headers["Content-Type"] = "text/plain"
-	end)
-	.start()
 
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
@@ -220,6 +128,102 @@ local function HandleIRC(from, to, msg)
 
 	channel:send(id .. safemessage)
 end
+
+local function handleWS(data,write)
+	if data == nil then return end 
+	
+	if type(data) == "string" then
+		data = json.parse(data) or {}
+	end
+	local sts = data.server or "??"
+	if data.status then
+		local tbl = data.status
+		_G.status[sts] = tbl
+		if client then
+			client:setGame((status["#1"].players or "??").." players on #1 | "..(status["#2"].players or "??").." players on #2 | !status")
+		end
+	end
+
+	if data.msg then
+		local txt = sts.." "..data.msg.nickname..": "..data.msg.txt
+		coroutine.wrap(function() channel:send(txt) end)()
+	end
+
+	if data.disconnect then
+		coroutine.wrap(function()
+			channel:send({
+				embed = {
+					title = data.disconnect.nickname.." has left the server.",
+					description = "Reason: "..data.disconnect.reason,
+					footer = {
+						text = data.disconnect.steamid
+					},
+					color = 0x0275d8
+				}
+			})
+		end)()
+	end
+
+	if data.connect then
+		coroutine.wrap(function()
+			channel:send({
+				embed = {
+					title = data.disconnect.nickname.." is connecting to the server.",
+					footer = {
+						text = data.disconnect.steamid
+					},
+					color = 0x4BB543
+				}
+			})
+		end)
+	end
+end
+
+local serverips = {
+	"195.154.166.219",
+	"94.23.170.2"
+}
+
+require('weblit-websocket')
+local wlit = require('weblit-app')
+	.bind({host = "0.0.0.0", port = 20122})
+
+	.use(require('weblit-logger'))
+  	.use(require('weblit-auto-headers'))
+
+	.websocket({
+		path = "/v2/socket"
+	}, 
+	function (req, read, write)
+		print("New client")
+		print("checking ip...")
+		local here = false
+		for _, serverip in pairs(serverips) do
+			local ip = req.socket:getsockname().ip
+			if ip == serverip or ip == "::1" or ip == "::" or ip == "127.0.0.1" then
+				here = true
+			end
+		end
+
+		if not here then
+			write()
+			print("ok bye")
+		end
+
+		for message in read do
+			message.mask = nil
+			handleWS(message.payload,write)
+			write(message)
+		end
+		write()
+		print("Client left")
+	end)
+	.route({ path = "/:name"}, function (req, res)
+			res.body = req.method .. " - " .. req.params.name .. "\n"
+			res.code = 200
+			res.headers["Content-Type"] = "text/plain"
+	end)
+	.start()
 
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))

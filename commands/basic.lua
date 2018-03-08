@@ -20,8 +20,8 @@ return {
                     name = "Server "..sv,
                     value = ([[
                         **Hostname:** %s
-                        **Players:** %s
-                        **Map:** %s
+**Players:** %s
+**Map:** %s
                     ]]):format(sts.title,tostring(sts.players),sts.map)
                 }
             end
