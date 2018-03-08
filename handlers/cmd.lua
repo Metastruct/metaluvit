@@ -64,5 +64,5 @@ return function(object,callback)
             end
         end
     end)
-    callback()
+    if callback then callback() end
 end
