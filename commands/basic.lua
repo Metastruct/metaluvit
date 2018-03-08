@@ -3,6 +3,7 @@ return {
         description = "Simple command.",
         callback = function(msg,args,line,config)
             msg:reply("Pong")
+            return true
         end
     }
 }

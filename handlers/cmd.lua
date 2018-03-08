@@ -9,7 +9,7 @@ local fs = require('fs')
 
 return function(object)
     local client = object.client
-    object.commands = {}
+    object.commands = object.commands or {}
 
     for k,v in pairs(fs.readdirSync('commands')) do
         local name = string.StripExtension( v )
@@ -46,13 +46,15 @@ return function(object)
             for cmd,obj in pairs(v) do
                 local combine = object.prefix..cmd
                 if msg.content:StartWith(combine.." ") or msg.content == combine then
-                    if not msg.member:hasRole(object.groups.devs) then
-                        msg:reply("You cannot access this command!")
-                        return
-                    end
-                    if(obj.admin and not msg.member:hasRole(object.groups.admins)) then
-                        msg:reply("This command is for `Administrator` role's users only.")
-                        return
+                    if not obj.forusers then
+                        if not msg.member:hasRole(object.groups.devs) then
+                            msg:reply("You cannot access this command!")
+                            return
+                        end
+                        if(obj.admin and not msg.member:hasRole(object.groups.admins)) then
+                            msg:reply("This command is for `Administrator` role's users only.")
+                            return
+                        end
                     end
                     local args = string.Split(msg.content, " ")
                     table.remove(args,1)

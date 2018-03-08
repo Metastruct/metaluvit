@@ -42,8 +42,51 @@ end
 
 local json = require('json')
 
-local function handleWS(data)
+local status = {
+	["#1"] = {},
+	["#2"] = {}
+}
 
+local function handleWS(data)
+	data = json.decode(data)
+	local sts = data.server or "??"
+	if data.status then
+		local tbl = data.status
+		status[sts] = tbl
+		if client then
+			client:setGame((status["#1"].players or "??").." players on #1 | "..(status["#2"].players or "??").." players on #2 | !status")
+		end
+	end
+
+	if data.msg then
+		local txt = sts.." "..data.msg.nickname..": "..txt
+		channel:send(txt)
+	end
+
+	if data.disconnect then
+		channel:send({
+			embed = {
+				title = data.disconnect.nickname.." has left the server.",
+				description = "Reason: "..data.disconnect.reason,
+				footer = {
+					text = data.disconnect.steamid
+				},
+				color = 0x0275d8
+			}
+		})
+	end
+
+	if data.connect then
+		channel:send({
+			embed = {
+				title = data.disconnect.nickname.." is connecting to the server.",
+				footer = {
+					text = data.disconnect.steamid
+				},
+				color = 0x4BB543
+			}
+		})
+	end
 end
 
 local serverips = {
@@ -98,8 +141,34 @@ local channel
 _G.config.enabled = true
 _G.config.irc = c
 _G.config.client = client
+_G.commands = {}
 
 require("./handlers/cmd.lua")(config)
+
+_G.commands.basic.status = {
+	forusers = true,
+	description = "Status of game server.",
+	callback = function(msg,args,line,config)
+		local embed = {
+			title = "Status",
+			fields = {}
+		}
+
+		for sv,sts in pairs(status) do
+			embed.fields[#embed.fields+1] = {
+				name = "Server "..sv,
+				value = [[
+					**Hostname:** %s
+					**Players:** %s
+					**Map:** %s
+				]]:format(sts.title,tostring(sts.players),sts.map)
+			}
+		end
+
+		msg:reply({embed=embed})
+		return true
+	end
+}
 
 local function getDiscordNick(id)
 	local usr = guild.members:find(function(obj)
@@ -176,7 +245,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
