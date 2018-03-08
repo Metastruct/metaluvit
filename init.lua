@@ -228,7 +228,7 @@ local wlit = require('weblit-app')
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
