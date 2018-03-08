@@ -40,7 +40,7 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
-local json = require('cjson')
+local json = require('json').use_lpeg()
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
@@ -175,7 +175,7 @@ local function handleWS(data,write)
 					color = 0x4BB543
 				}
 			})
-		end)
+		end)()
 	end
 end
 
