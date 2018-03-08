@@ -41,13 +41,16 @@ function string.ends(String,End)
 end
 
 local json = require('json')
+json.use_lpeg ()
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
 }
 
 local function handleWS(data,write)
-	data = json.decode(data)
+	if type(data) == string then
+		data = json.decode(data)
+	end
 	local sts = data.server or "??"
 	if data.status then
 		local tbl = data.status
