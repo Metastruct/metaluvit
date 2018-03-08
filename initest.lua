@@ -64,8 +64,8 @@ local wlit = require('weblit-app')
 		print("checking ip...")
 		local here = false
 		for _, serverip in pairs(serverips) do
-			local ip = req.socket:address()
-			if ip == serverip or ip == "::1" or ip == "::" then
+			local ip = req.socket:getsockname().ip
+			if ip == serverip or ip == "::1" or ip == "::" or ip == "127.0.0.1" then
 				here = true
 			end
 		end
