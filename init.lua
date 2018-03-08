@@ -41,7 +41,6 @@ function string.ends(String,End)
 end
 
 local json = require('json')
-json.use_lpeg ()
 _G.status = {
 	["#1"] = {},
 	["#2"] = {}
