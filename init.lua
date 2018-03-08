@@ -89,7 +89,6 @@ local function handleWS(data,write)
 			}
 		})
 	end
-	write("OK")
 end
 
 local serverips = {
@@ -126,6 +125,7 @@ local wlit = require('weblit-app')
 		for message in read do
 			message.mask = nil
 			handleWS(message,write)
+			write("OK")
 		end
 		write()
 		print("Client left")
@@ -223,7 +223,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
