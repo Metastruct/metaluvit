@@ -67,7 +67,7 @@ local wlit = require('weblit-app')
 		local here = false
 		for k,v in pairs(serverips) do
 			local ip = req.headers['x-forwarded-for']
-			if ip == serverips or ip == "::1" or ip == "::" then
+			if serverips[ip] or ip == "::1" or ip == "::" then
 				here = true
 			end
 		end
