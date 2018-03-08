@@ -47,6 +47,8 @@ _G.status = {
 }
 
 local function handleWS(data,write)
+	if data == nil then return end 
+	
 	if type(data) == "string" then
 		data = json.decode(data)
 	end
@@ -222,7 +224,7 @@ end
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
