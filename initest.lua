@@ -40,38 +40,54 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
---[[
-local json = require("json")
-local weblit = require("weblit")
+local function handleWS(data)
 
-local wlit = weblit.app
-		.bind({host = "0.0.0.0", port = 20122})
+end
 
-		.use(weblit.logger)
-		.use(weblit.autoHeaders)
-		.use(weblit.websocket)
+local serverips = {
+	"195.154.166.219",
+	"94.23.170.2"
+}
 
+require('weblit-websocket')
+local wlit = require('weblit-app')
+	.bind({host = "0.0.0.0", port = 20122})
 
-		.websocket({
-		path = "/v2/socket",
-		protocol = "virgo/2.0"
-		}, function (req, read, write)
-		-- Log the request headers
-		p(req)
-		-- Log and echo all messages
-		for message in read do
-				write(message)
+	.use(require('weblit-logger'))
+  	.use(require('weblit-auto-headers'))
+
+	.websocket({
+		path = "/v2/socket"
+	}, 
+	function (req, read, write)
+		print("New client")
+		print("checking ip...")
+		local here = false
+		for _, serverip in pairs(serverips) do
+			local ip = req.socket:address()
+			if ip == serverip or ip == "::1" or ip == "::" then
+				here = true
+			end
 		end
-		-- End the stream
+
+		if not here then
+			write()
+			print("ok bye")
+		end
+
+		for message in read do
+			message.mask = nil
+			write(message)
+		end
 		write()
-		end)
-		.route({ path = "/:name"}, function (req, res)
-				res.body = req.method .. " - " .. req.params.name .. "\n"
-				res.code = 200
-				res.headers["Content-Type"] = "text/plain"
-		end)
-		.start()
-]]
+		print("Client left")
+	end)
+	.route({ path = "/:name"}, function (req, res)
+			res.body = req.method .. " - " .. req.params.name .. "\n"
+			res.code = 200
+			res.headers["Content-Type"] = "text/plain"
+	end)
+	.start()
 
 local c = IRC:new ("irc.3kv.in", "Discord_INDEV", {auto_connect = true, auto_join = {"#test"}})
 local guild
