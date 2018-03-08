@@ -40,6 +40,17 @@ function string.ends(String,End)
 	return End == "" or string.sub(String,-string.len(End)) == End
 end
 
+local json = require('json')
+
+local function handleWS(data)
+
+end
+
+local serverips = {
+	"195.154.166.219",
+	"94.23.170.2"
+}
+
 require('weblit-websocket')
 local wlit = require('weblit-app')
 	.bind({host = "0.0.0.0", port = 20122})
@@ -52,6 +63,20 @@ local wlit = require('weblit-app')
 	}, 
 	function (req, read, write)
 		print("New client")
+		print("checking ip...")
+		local here = false
+		for k,v in pairs(serverips) do
+			local ip = req.headers['x-forwarded-for']
+			if ip == serverips or ip == "::1" or ip == "::" then
+				here = true
+			end
+		end
+
+		if not here then
+			write()
+			print("ok bye")
+		end
+
 		for message in read do
 			message.mask = nil
 			write(message)
