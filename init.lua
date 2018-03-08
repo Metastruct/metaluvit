@@ -125,7 +125,7 @@ local wlit = require('weblit-app')
 		for message in read do
 			message.mask = nil
 			handleWS(message,write)
-			write("OK")
+			write(message)
 		end
 		write()
 		print("Client left")
