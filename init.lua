@@ -142,6 +142,10 @@ local function HandleIRC(from, to, msg)
 	channel:send(id .. safemessage)
 end
 
+local function cleanContent(str)
+	return str:gsub('@everyone', '@​everyone'):gsub('@here', '@​here') // theres a zero width space here
+end
+
 local function handleWS(data,write)
 	if data == nil then return end
 
@@ -163,7 +167,7 @@ local function handleWS(data,write)
 			coroutine.wrap(function()
 				Webhook:setAvatar("files/tmp/"..file)
 				Webhook:setName(sts.." "..data.msg.nickname)
-				Webhook:send(data.msg.txt)
+				Webhook:send(cleanContent(data.msg.txt))
 			end)()
 		end
 	end
