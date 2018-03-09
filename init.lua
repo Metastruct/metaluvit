@@ -86,7 +86,7 @@ client:on("ready", function()
 end)
 
 client:on("messageCreate", function(message)
-	if message.channel == channel and message.author ~= client.user and config.enabled == true then
+	if message.channel == channel and message.author ~= client.user and config.enabled == true and message.author.discriminator ~= 0000 then
 		--[[if message.content == ".status" then
 			message:reply("did you mean `!status`?")
 			return
@@ -158,12 +158,27 @@ local function handleWS(data,write)
 	end
 
 	if data.msg then
-		local file = image.getByURL(data.msg.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png", 10)
-		if not Webhook then
+		local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png", 10)
+		if Webhook then
 			coroutine.wrap(function()
 				Webhook:setAvatar("files/tmp/"..file)
 				Webhook:setName(sts.." "..data.msg.nickname)
-				Webhook:send(data.msg.txt)
+
+				local msg = data.msg.txt
+
+				if msg:match("@%w+") then
+					for mention in msg:gmatch("@(%w+)") do
+						local uid = findDiscordUserID(mention)
+						if uid then
+							msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
+						end
+					end
+				end
+	
+				msg = string.Replace(msg, "@everyone", "everyone")
+				msg = string.Replace(msg, "@here", "here")
+
+				Webhook:send(msg)
 			end)()
 		end
 	end
