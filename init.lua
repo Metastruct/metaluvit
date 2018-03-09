@@ -178,8 +178,8 @@ local function handleWS(data,write)
 			channel:send({
 				embed = {
 					author = {
-						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.disconnect.nickname or "WTF?"
+						icon = data.connect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.connect.nickname or "WTF?"
 					},
 					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
