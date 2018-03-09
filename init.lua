@@ -158,12 +158,16 @@ local function handleWS(data,write)
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
+					author = {
+						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.disconnect.nickname or "WTF?"
+					},
 					title = data.disconnect.nickname.." has left the server.",
 					description = "Reason: "..data.disconnect.reason,
 					footer = {
 						text = data.disconnect.steamid.." | Server "..sts
 					},
-					color = 0x4BB543
+					color = 0x0275d8
 				}
 			})
 		end)()
@@ -173,9 +177,29 @@ local function handleWS(data,write)
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
+					author = {
+						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.disconnect.nickname or "WTF?"
+					},
 					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
 						text = data.connect.steamid.." | Server "..sts
+					},
+					color = 0x4BB543
+				}
+			})
+		end)()
+	end
+
+	if data.shutdown then
+		handleWS({status={players="??",title="Meta Construct "..sts,plylist=[],map="gm_unknown"},server=sts})
+		coroutine.wrap(function()
+			channel:send({
+				embed = {
+					title = "Server "..sts.." shutting down...",
+					description = "Resetting status..."
+					footer = {
+						text = "Server "..sts
 					},
 					color = 0x0275d8
 				}

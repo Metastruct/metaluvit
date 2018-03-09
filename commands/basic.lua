@@ -23,7 +23,9 @@ return {
                         **Hostname:** %s
 **Players:** %s
 **Map:** %s
-                    ]]):format(sts.title,tostring(sts.players),sts.map)
+
+**Players:** %s
+                    ]]):format(sts.title,tostring(sts.players),sts.map,table.concat(sts.plylist,"`, `"))
                 }
             end
 
