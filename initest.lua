@@ -79,6 +79,11 @@ end)
 
 client:on("messageCreate", function(message)
 	if message.channel == channel and message.author ~= client.user and config.enabled == true then
+		if message.content == ".status" then
+			message:reply("did you mean `!status`?")
+			return
+		end
+
 		if message.content:starts(".") and message.content:len() > 1 then
 			c:say("#test", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
 			c:say("#test", message.content)
@@ -153,10 +158,14 @@ local function handleWS(data,write)
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
+					author = {
+						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.disconnect.nickname or "WTF?"
+					},
 					title = data.disconnect.nickname.." has left the server.",
 					description = "Reason: "..data.disconnect.reason,
 					footer = {
-						text = data.disconnect.steamid
+						text = data.disconnect.steamid.." | Server "..sts
 					},
 					color = 0x0275d8
 				}
@@ -168,11 +177,31 @@ local function handleWS(data,write)
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
-					title = data.disconnect.nickname.." is connecting to the server.",
+					author = {
+						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.disconnect.nickname or "WTF?"
+					},
+					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
-						text = data.disconnect.steamid
+						text = data.connect.steamid.." | Server "..sts
 					},
 					color = 0x4BB543
+				}
+			})
+		end)()
+	end
+
+	if data.shutdown then
+		handleWS({status={players="??",title="Meta Construct "..sts,plylist={},map="gm_unknown"},server=sts})
+		coroutine.wrap(function()
+			channel:send({
+				embed = {
+					title = "Server "..sts.." shutting down...",
+					description = "Resetting status...",
+					footer = {
+						text = "Server "..sts
+					},
+					color = 0x0275d8
 				}
 			})
 		end)()
@@ -228,7 +257,7 @@ local wlit = require('weblit-app')
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord_INDEV" and to == "#test" and config.enabled == true) then
+	if (from ~= "Discord_INDEV" and to == "#test" and config.enabled == true and not string.starts(from,"meta")) then
 		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
 	end
 

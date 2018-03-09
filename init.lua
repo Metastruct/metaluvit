@@ -192,12 +192,12 @@ local function handleWS(data,write)
 	end
 
 	if data.shutdown then
-		handleWS({status={players="??",title="Meta Construct "..sts,plylist=[],map="gm_unknown"},server=sts})
+		handleWS({status={players="??",title="Meta Construct "..sts,plylist={},map="gm_unknown"},server=sts})
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
 					title = "Server "..sts.." shutting down...",
-					description = "Resetting status..."
+					description = "Resetting status...",
 					footer = {
 						text = "Server "..sts
 					},
