@@ -11,21 +11,25 @@ return {
         description = "Status of game server.",
         callback = function(msg,args,line,config)
             local embed = {
-                title = "Status",
+                title = ":globe_with_meridians: Status",
                 fields = {},
                 color = 0x0275d8
             }
 
-            for sv,sts in pairs(status) do
-                embed.fields[#embed.fields+1] = {
-                    name = "Server "..sv,
-                    value = ([[
-                        **Hostname:** %s
-**Players:** %s
-**Map:** %s
+			for _, data in pairs(status) do
+				local plyList = "```\n%s\n```"
+				if data.plylist == nil or #data.plylist == 0 then
+					plyList = plyList:format("none.")
+				else
+					plyList = plyList:format(table.concat(data.plylist, ", "))
+				end
 
-**Players:** %s
-                    ]]):format(sts.title,tostring(sts.players),sts.map,(sts.plylist == nil or #sts.plylist == 0) and "none." or "`"..table.concat(sts.plylist or {},"`, `").."`")
+                embed.fields[#embed.fields + 1] = {
+                    name = data.title,
+                    value = ([[
+:map: **Map**: `%s`
+:busts_in_silhouette: **Players**: %s (%s)
+                    ]]):format(data.map, plyList, tostring(data.players))
                 }
             end
 
