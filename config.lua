@@ -7,5 +7,5 @@ return {
         devs = os.getenv("DISCORD_GROUP_DEVELOPERS"),
         admins = os.getenv("DISCORD_GROUP_ADMINS")
     },
-    prefix = "!"
+    prefix = "[!|/|%.]"
 }
