@@ -121,7 +121,7 @@ client:on("messageCreate", function(message)
 end)
 
 local function cleanContent(str)
-	return str:gsub('@everyone', '@​everyone'):gsub('@here', '@​here') // theres a zero width space here
+	return str:gsub('@everyone', 'everyone'):gsub('@here', 'here')
 end
 
 local function HandleIRC(from, to, msg)
@@ -180,8 +180,7 @@ local function handleWS(data,write)
 					end
 				end
 	
-				msg = string.Replace(msg, "@everyone", "everyone")
-				msg = string.Replace(msg, "@here", "here")
+				msg = cleanContent(msg)
 
 				Webhook:send(msg)
 			end)()
