@@ -120,6 +120,10 @@ client:on("messageCreate", function(message)
 	end
 end)
 
+local function cleanContent(str)
+	return str:gsub('@everyone', '@​everyone'):gsub('@here', '@​here') // theres a zero width space here
+end
+
 local function HandleIRC(from, to, msg)
 	local id = "**<" .. from .. ">** "
 	if msg:match("@%w+") then
@@ -135,15 +139,12 @@ local function HandleIRC(from, to, msg)
 		id = ""
 	end
 	-- Discord Markdown escape
+	safemessage = cleanContent(safemessage)
 	safemessage = safemessage:gsub("`", "\\`")
 	--safemessage = safemessage:gsub("_", "\\_") -- breaks urls
 	safemessage = safemessage:gsub("*", "\\*")
 
 	channel:send(id .. safemessage)
-end
-
-local function cleanContent(str)
-	return str:gsub('@everyone', '@​everyone'):gsub('@here', '@​here') // theres a zero width space here
 end
 
 local function handleWS(data,write)
