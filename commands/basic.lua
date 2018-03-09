@@ -21,7 +21,7 @@ return {
 				if data.plylist == nil or #data.plylist == 0 then
 					plyList = "none."
 				else
-					plyList = "```\n" .. table.concat(data.plylist, ", ")) .. "\n```"
+					plyList = "```\n" .. table.concat(data.plylist, ", ") .. "\n```"
 				end
 
                 embed.fields[#embed.fields + 1] = {
