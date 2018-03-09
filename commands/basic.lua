@@ -25,7 +25,7 @@ return {
 **Map:** %s
 
 **Players:** %s
-                    ]]):format(sts.title,tostring(sts.players),sts.map,(#sts.plylist == 0 or #sts.plylist == nil) and "none." or "`"..table.concat(sts.plylist or {},"`, `").."`")
+                    ]]):format(sts.title,tostring(sts.players),sts.map,(sts.plylist == nil or #sts.plylist == 0) and "none." or "`"..table.concat(sts.plylist or {},"`, `").."`")
                 }
             end
 
