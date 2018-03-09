@@ -86,7 +86,7 @@ client:on("ready", function()
 end)
 
 client:on("messageCreate", function(message)
-	if message.channel == channel and message.author ~= client.user and config.enabled == true and message.author.discriminator ~= "0000" then
+	if message.channel == channel and message.author ~= client.user and config.enabled == true and not message.author.bot and message.author.discriminator ~= "0000" then
 		--[[if message.content == ".status" then
 			message:reply("did you mean `!status`?")
 			return
