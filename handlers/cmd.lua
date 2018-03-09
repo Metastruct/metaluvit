@@ -45,7 +45,7 @@ return function(object,callback)
         for k,v in pairs(object.commands) do
             for cmd,obj in pairs(v) do
                 local combine = object.prefix..cmd
-                if msg.content:match("^" .. combine .. " ") or msg.content == combine then
+                if msg.content:match("^" .. combine .. "%s?") then
                     if not obj.forusers then
                         if not msg.member:hasRole(object.groups.devs) then
                             msg:reply("You cannot access this command!")
