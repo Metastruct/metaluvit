@@ -5,7 +5,7 @@ function string.StripExtension( path )
 end
 
 function string.StartWith( String, Start )
-    return string.sub( String, 1, string.len (Start) ) == Start
+    return string.gsub( String, 1, string.len (Start) ) == Start
 end
 
 function string.Split( str, delimiter )
