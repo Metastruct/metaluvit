@@ -166,11 +166,13 @@ local function handleWS(data,write)
 		local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png", 10)
 		if Webhook then
 			coroutine.wrap(function()
+				local msg = data.msg.txt
+				if not msg then return end
+	
 				Webhook:setAvatar("files/tmp/"..file)
 				Webhook:setName(sts.." "..data.msg.nickname)
 
-				local msg = data.msg.txt
-
+	
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
 						local uid = findDiscordUserID(mention)
