@@ -160,7 +160,7 @@ local function handleWS(data,write)
 				embed = {
 					author = {
 						icon_url = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.connect.nickname .. " has left the server."
+						name = data.disconnect.nickname .. " has left the server."
 					},
 					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
