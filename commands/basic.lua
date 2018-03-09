@@ -17,19 +17,19 @@ return {
             }
 
 			for _, data in pairs(status) do
-				local plyList = "```\n%s\n```"
+				local plyList
 				if data.plylist == nil or #data.plylist == 0 then
-					plyList = plyList:format("none.")
+					plyList = "none."
 				else
-					plyList = plyList:format(table.concat(data.plylist, ", "))
+					plyList = "```\n" .. table.concat(data.plylist, ", ")) .. "\n```"
 				end
 
                 embed.fields[#embed.fields + 1] = {
                     name = data.title,
                     value = ([[
 :map: **Map**: `%s`
-:busts_in_silhouette: **Players**: %s (%s)
-                    ]]):format(data.map, plyList, tostring(data.players))
+:busts_in_silhouette: **%s players**: %s
+                    ]]):format(data.map, tostring(data.players), plyList)
                 }
             end
 
