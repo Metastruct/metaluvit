@@ -135,8 +135,8 @@ local function HandleIRC(from, to, msg)
 end
 
 local function handleWS(data,write)
-	if data == nil then return end 
-	
+	if data == nil then return end
+
 	if type(data) == "string" then
 		data = json.parse(data) or {}
 	end
@@ -160,14 +160,13 @@ local function handleWS(data,write)
 				embed = {
 					author = {
 						icon_url = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.disconnect.nickname or "WTF?"
+						name = data.connect.nickname .. " has left the server."
 					},
-					title = data.disconnect.nickname.." has left the server.",
-					description = "Reason: "..data.disconnect.reason,
+					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
 						text = data.disconnect.steamid.." | Server "..sts
 					},
-					color = 0x0275d8
+					color = 0xB54343
 				}
 			})
 		end)()
@@ -179,9 +178,8 @@ local function handleWS(data,write)
 				embed = {
 					author = {
 						icon_url = data.connect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.connect.nickname or "WTF?"
+						name = data.connect.nickname .. " is connecting to the server."
 					},
-					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
 						text = data.connect.steamid.." | Server "..sts
 					},
@@ -222,7 +220,7 @@ local wlit = require('weblit-app')
 
 	.websocket({
 		path = "/v2/socket"
-	}, 
+	},
 	function (req, read, write)
 		print("New client")
 		print("checking ip...")
