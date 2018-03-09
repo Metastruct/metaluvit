@@ -159,10 +159,12 @@ local function handleWS(data,write)
 
 	if data.msg then
 		local file = image.getByURL(data.msg.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png", 10)
-		if not Webhook then
-			WebhookClient:setAvatar("files/tmp/"..file)
-			Webhook:setName(sts.." "..data.msg.nickname)
-			WebhookClient:send(data.msg.txt)
+		if Webhook then
+			coroutine.wrap(function()
+				Webhook:setAvatar("files/tmp/"..file)
+				Webhook:setName(sts.." "..data.msg.nickname)
+				Webhook:send(data.msg.txt)
+			end)()
 		end
 	end
 
