@@ -11,14 +11,14 @@ local function enum(tbl)
 			if call[k] then
 				return call[k]
 			else
-				return error('invalid enumeration: ' .. tostring(k))
+				return error('invalid enumeration: ' .. k)
 			end
 		end,
 		__index = function(_, k)
 			if tbl[k] then
 				return tbl[k]
 			else
-				return error('invalid enumeration: ' .. tostring(k))
+				return error('invalid enumeration: ' .. k)
 			end
 		end,
 		__pairs = function()
@@ -75,7 +75,6 @@ enums.relationshipType = enum {
 enums.gameType = enum {
 	default   = 0,
 	streaming = 1,
-	listening = 2,
 }
 
 enums.verificationLevel = enum {

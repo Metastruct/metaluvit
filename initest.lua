@@ -71,20 +71,28 @@ local function findDiscordUserID(name)
 	return usr and usr.id
 end
 
+local http = require('http')
+require("helpers/image")
+
+local Webhook
+
 client:on("ready", function()
 	guild = client:getGuild(serverid)
 	channel = guild:getChannel(channelid)
 	print("Logged in as " .. client.user.username)
+
+	local meme = string.Split(config.webhook, "/")
+	Webhook = discordia.WebhookClient(meme[1], meme[2], {name = "Discordia's new era!"})
 end)
 
 client:on("messageCreate", function(message)
 	if message.channel == channel and message.author ~= client.user and config.enabled == true then
-		if message.content == ".status" then
+		--[[if message.content == ".status" then
 			message:reply("did you mean `!status`?")
 			return
-		end
+		end]]
 
-		if message.content:starts(".") and message.content:len() > 1 then
+		if message.content:starts(".") and message.content ~= ".status" and message.content:len() > 1 then
 			c:say("#test", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
 			c:say("#test", message.content)
 		else
@@ -135,8 +143,8 @@ local function HandleIRC(from, to, msg)
 end
 
 local function handleWS(data,write)
-	if data == nil then return end 
-	
+	if data == nil then return end
+
 	if type(data) == "string" then
 		data = json.parse(data) or {}
 	end
@@ -150,8 +158,15 @@ local function handleWS(data,write)
 	end
 
 	if data.msg then
-		local txt = sts.." "..data.msg.nickname..": "..data.msg.txt
-		coroutine.wrap(function() channel:send(txt) end)()
+		local file = image.getByURL(data.msg.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png", 10)
+		if Webhook then
+			coroutine.wrap(function()
+				Webhook:setAvatar("files/tmp/"..file)
+				Webhook:setName("<"..sts.."> "..data.msg.nickname)
+				
+				Webhook:send(data.msg.txt)
+			end)()
+		end
 	end
 
 	if data.disconnect then
@@ -159,15 +174,14 @@ local function handleWS(data,write)
 			channel:send({
 				embed = {
 					author = {
-						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.disconnect.nickname or "WTF?"
+						icon_url = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.connect.nickname .. " has left the server."
 					},
-					title = data.disconnect.nickname.." has left the server.",
-					description = "Reason: "..data.disconnect.reason,
+					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
 						text = data.disconnect.steamid.." | Server "..sts
 					},
-					color = 0x0275d8
+					color = 0xB54343
 				}
 			})
 		end)()
@@ -178,10 +192,9 @@ local function handleWS(data,write)
 			channel:send({
 				embed = {
 					author = {
-						icon = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.disconnect.nickname or "WTF?"
+						icon_url = data.connect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						name = data.connect.nickname .. " is connecting to the server."
 					},
-					title = data.connect.nickname.." is connecting to the server.",
 					footer = {
 						text = data.connect.steamid.." | Server "..sts
 					},
@@ -222,7 +235,7 @@ local wlit = require('weblit-app')
 
 	.websocket({
 		path = "/v2/socket"
-	}, 
+	},
 	function (req, read, write)
 		print("New client")
 		print("checking ip...")

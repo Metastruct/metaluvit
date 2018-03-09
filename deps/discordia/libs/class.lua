@@ -19,7 +19,7 @@ end
 local default = {}
 
 function default:__tostring()
-	return self.__name
+	return 'instance of class ' .. self.__name
 end
 
 function default:__hash()

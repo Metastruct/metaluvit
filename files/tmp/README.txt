@@ -1,0 +1,1 @@
+There is no info about this folder, I just want Github to not remove the temp folder on commit.

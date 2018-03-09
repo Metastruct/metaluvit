@@ -71,10 +71,18 @@ local function findDiscordUserID(name)
 	return usr and usr.id
 end
 
+local http = require('http')
+require("helpers/image")
+
+local Webhook
+
 client:on("ready", function()
 	guild = client:getGuild(serverid)
 	channel = guild:getChannel(channelid)
 	print("Logged in as " .. client.user.username)
+
+	local meme = string.Split(config.webhook, "/")
+	Webhook = discordia.WebhookClient(meme[1], meme[2], {name = "Discordia's new era!"})
 end)
 
 client:on("messageCreate", function(message)
@@ -150,8 +158,12 @@ local function handleWS(data,write)
 	end
 
 	if data.msg then
-		local txt = sts.." "..data.msg.nickname..": "..data.msg.txt
-		coroutine.wrap(function() channel:send(txt) end)()
+		local file = image.getByURL(data.msg.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png", 10)
+		if not Webhook then
+			WebhookClient:setAvatar("files/tmp/"..file)
+			Webhook:setName(sts.." "..data.msg.nickname)
+			WebhookClient:send(data.msg.txt)
+		end
 	end
 
 	if data.disconnect then
