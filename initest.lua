@@ -57,7 +57,7 @@ _G.commands = {}
 
 require("./handlers/cmd.lua")(config)
 
-local function getDiscordNick(id)
+local function getDiscord_INDEVNick(id)
 	local usr = guild.members:find(function(obj)
 		return obj.id == id
 		end)
@@ -86,7 +86,9 @@ client:on("ready", function()
 end)
 
 client:on("messageCreate", function(message)
-	if message.channel == channel and message.author ~= client.user and config.enabled == true then
+	print(message.author.discriminator)
+
+	if message.channel == channel and message.author ~= client.user and config.enabled == true and message.author.discriminator ~= "0000" then
 		--[[if message.content == ".status" then
 			message:reply("did you mean `!status`?")
 			return
@@ -120,6 +122,10 @@ client:on("messageCreate", function(message)
 	end
 end)
 
+local function cleanContent(str)
+	return str:gsub('@everyone', 'everyone'):gsub('@here', 'here')
+end
+
 local function HandleIRC(from, to, msg)
 	local id = "**<" .. from .. ">** "
 	if msg:match("@%w+") then
@@ -135,6 +141,7 @@ local function HandleIRC(from, to, msg)
 		id = ""
 	end
 	-- Discord Markdown escape
+	safemessage = cleanContent(safemessage)
 	safemessage = safemessage:gsub("`", "\\`")
 	--safemessage = safemessage:gsub("_", "\\_") -- breaks urls
 	safemessage = safemessage:gsub("*", "\\*")
@@ -158,13 +165,26 @@ local function handleWS(data,write)
 	end
 
 	if data.msg then
-		local file = image.getByURL(data.msg.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png", 10)
+		local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png", 10)
 		if Webhook then
 			coroutine.wrap(function()
 				Webhook:setAvatar("files/tmp/"..file)
-				Webhook:setName("<"..sts.."> "..data.msg.nickname)
-				
-				Webhook:send(data.msg.txt)
+				Webhook:setName(sts.." "..data.msg.nickname)
+
+				local msg = data.msg.txt
+
+				if msg:match("@%w+") then
+					for mention in msg:gmatch("@(%w+)") do
+						local uid = findDiscordUserID(mention)
+						if uid then
+							msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
+						end
+					end
+				end
+	
+				msg = cleanContent(msg)
+
+				Webhook:send(msg)
 			end)()
 		end
 	end
@@ -174,8 +194,8 @@ local function handleWS(data,write)
 			channel:send({
 				embed = {
 					author = {
-						icon_url = data.disconnect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
-						name = data.connect.nickname .. " has left the server."
+						icon_url = data.disconnect.avatar or "http://i.imgur.com/ovW4MBM.png",
+						name = data.disconnect.nickname .. " has left the server."
 					},
 					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
@@ -192,7 +212,7 @@ local function handleWS(data,write)
 			channel:send({
 				embed = {
 					author = {
-						icon_url = data.connect.avatar or "https://cdn1.iconfinder.com/data/icons/user-experience-dotted/512/avatar_client_person_profile_question_unknown_user-512.png",
+						icon_url = data.connect.avatar or "http://i.imgur.com/ovW4MBM.png",
 						name = data.connect.nickname .. " is connecting to the server."
 					},
 					footer = {
