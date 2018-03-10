@@ -1,2 +1,5 @@
 gateway.json
 discordia.log
+
+files/tmp/*
+!files/tmp/.gitkeep
