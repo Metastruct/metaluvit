@@ -46,6 +46,11 @@ return function(object,callback)
             for cmd,obj in pairs(v) do
                 local combine = object.prefix..cmd
                 if msg.content:match("^" .. combine .. "%s?") then
+                    if not msg.member then
+                            msg:reply("Sorry, commands can not be used in DMs.")
+                            return
+                    end
+                    
                     if not obj.forusers then
                         if not msg.member:hasRole(object.groups.devs) then
                             msg:reply("You cannot access this command!")
