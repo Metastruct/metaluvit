@@ -38,18 +38,11 @@ function Time:__init(value)
 end
 
 local function addString(unit, tbl, ret)
-	if tbl[unit] == 1 then
-		insert(ret, tbl[unit] .. ' ' .. unit:sub(1, #unit - 1))
-	elseif tbl[unit] > 0 then
-		insert(ret, tbl[unit] .. ' ' .. unit)
-	end
+	if tbl[unit] == 0 then return end
+	return insert(ret, tbl[unit] .. ' ' .. unit)
 end
 
 function Time:__tostring()
-	return 'Time: ' .. self:toString()
-end
-
-function Time:toString()
 	local tbl = self:toTable()
 	local ret = {}
 	addString('weeks', tbl, ret)
@@ -58,7 +51,7 @@ function Time:toString()
 	addString('minutes', tbl, ret)
 	addString('seconds', tbl, ret)
 	addString('milliseconds', tbl, ret)
-	return concat(ret, ', ')
+	return 'Time: ' .. concat(ret, ', ')
 end
 
 function Time:__eq(other) check(self, other)
