@@ -207,16 +207,16 @@ local function handleWS(data,write)
 		end)()
 	end
 
-	if data.connect then
+	if data.spawn then
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
 					author = {
-						icon_url = data.connect.avatar or "http://i.imgur.com/ovW4MBM.png",
-						name = data.connect.nickname .. " is connecting to the server."
+						icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
+						name = data.spawn.nickname .. " has spawned."
 					},
 					footer = {
-						text = data.connect.steamid.." | Server "..sts
+						text = data.spawn.steamid.." | Server "..sts
 					},
 					color = 0x4BB543
 				}
