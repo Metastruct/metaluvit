@@ -15,7 +15,7 @@ return {
                 color = 0x0275d8
             }
 
-			for _, data in pairs(status) do
+			for sts, data in pairs(status) do
 				local plyList
 				if data.plylist == nil or #data.plylist == 0 then
 					plyList = "none."
@@ -23,10 +23,13 @@ return {
 					plyList = "```\n" .. table.concat(data.plylist, ", ") .. "\n```"
 				end
 
-                embed.description = ([[
+                embed.fields[#embed.fields + 1] = {
+                    title = data.title
+                    value = ([[
 :map: **Map**: `%s`
 :busts_in_silhouette: **%s players**: %s
                     ]]):format(data.map, tostring(data.players), plyList)
+                }
             end
 
             msg:reply({embed=embed})
