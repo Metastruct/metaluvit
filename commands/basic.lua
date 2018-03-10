@@ -20,17 +20,17 @@ return {
 
             for sts,dat in next,status do
                 local plyList
-				if data.plylist == nil or #data.plylist == 0 then
+				if dat.plylist == nil or #dat.plylist == 0 then
 					plyList = "none."
 				else
-					plyList = "```\n" .. table.concat(data.plylist, ", ") .. "\n```"
+					plyList = "```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
                 end
                 
                 wat = wat..([[
 Server %s
 :map: **Map**: `%s`
 :busts_in_silhouette: **%s players**: %s
-                    ]]):format(sts, data.map, tostring(data.players), plyList)
+                    ]]):format(sts, dat.map, tostring(dat.players), plyList)
             end
 
             embed.description = wat
