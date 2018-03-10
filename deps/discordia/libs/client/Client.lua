@@ -97,15 +97,15 @@ function Client:__init(options)
 	self._relationships = Cache({}, Relationship, self)
 	self._webhooks = WeakCache({}, Webhook, self) -- used for audit logs
 	self._logger = Logger(options.logLevel, options.dateTime, options.logFile)
+	self._role_map = {}
+	self._emoji_map = {}
 	self._channel_map = {}
 end
 
 for name, level in pairs(logLevel) do
 	Client[name] = function(self, fmt, ...)
 		local msg = self._logger:log(level, fmt, ...)
-		if #self._listeners[name] > 0 then
-			return self:emit(name, msg or format(fmt, ...))
-		end
+		return self:emit(name, msg or format(fmt, ...))
 	end
 end
 
@@ -219,7 +219,9 @@ local function run(self, token)
 		self:info('Launching shards %i through %i (%i out of %i)...', first, last, d, count)
 	end
 
-	self._shard_count = count
+	self._total_shard_count = count
+	self._shard_count = last - first
+
 	for id = first, last do
 		self._shards[id] = Shard(id, self)
 	end
@@ -367,10 +369,12 @@ function Client:setGame(game)
 		game = {name = game, type = gameType.default}
 	elseif type(game) == 'table' then
 		if type(game.name) == 'string' then
-			if type(game.url) == 'string' then
-				game.type = gameType.streaming
-			else
-				game.type = gameType.default
+			if type(game.type) ~= 'number' then
+				if type(game.url) == 'string' then
+					game.type = gameType.streaming
+				else
+					game.type = gameType.default
+				end
 			end
 		else
 			game = null
@@ -393,6 +397,10 @@ end
 
 function get.shardCount(self)
 	return self._shard_count
+end
+
+function get.totalShardCount(self)
+	return self._total_shard_count
 end
 
 function get.user(self)

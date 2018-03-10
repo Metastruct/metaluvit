@@ -421,14 +421,16 @@ function EventHandler.PRESENCE_UPDATE(d, client) -- may have incomplete data
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'PRESENCE_UPDATE') end
 		local member
-		if d.status == 'offline' and guild._large and not client._options.cacheAllMembers then
-			member = guild._members:_delete(d.user.id)
-		else
+		if client._options.cacheAllMembers then
 			member = guild._members:get(d.user.id)
-			if not member then
-				if d.user.username then
+			if not member then return end -- still loading or member left
+		else
+			if d.status == 'offline' and guild._large then
+				member = guild._members:_delete(d.user.id)
+			else
+				if d.user.username then -- member was offline
 					member = guild._members:_insert(d)
-				elseif user then
+				elseif user then -- member was invisible, user is still cached
 					member = guild._members:_insert(d)
 					member._user = user
 				end

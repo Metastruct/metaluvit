@@ -5,47 +5,47 @@ local resume, running = coroutine.resume, coroutine.running
 local insert, remove = table.insert, table.remove
 local setTimeout, clearTimeout = timer.setTimeout, timer.clearTimeout
 
-local listenersMeta = {
-	__index = function(self, k)
-		self[k] = {}
-		return self[k]
-	end
-}
-
 local Emitter = require('class')('Emitter')
 
 function Emitter:__init()
-	self._listeners = setmetatable({}, listenersMeta)
+	self._listeners = {}
+end
+
+local function new(self, name, listener)
+	local listeners = self._listeners[name]
+	if not listeners then
+		listeners = {}
+		self._listeners[name] = listeners
+	end
+	insert(listeners, listener)
+	return listener.fn
 end
 
 function Emitter:on(name, fn)
-	insert(self._listeners[name], {fn = fn})
-	return fn
+	return new(self, name, {fn = fn})
 end
 
 function Emitter:once(name, fn)
-	insert(self._listeners[name], {fn = fn, once = true})
-	return fn
+	return new(self, name, {fn = fn, once = true})
 end
 
 function Emitter:onSync(name, fn)
-	insert(self._listeners[name], {fn = fn, sync = true})
-	return fn
+	return new(self, name, {fn = fn, sync = true})
 end
 
 function Emitter:onceSync(name, fn)
-	insert(self._listeners[name], {fn = fn, once = true, sync = true})
-	return fn
+	return new(self, name, {fn = fn, once = true, sync = true})
 end
 
 function Emitter:emit(name, ...)
 	local listeners = self._listeners[name]
+	if not listeners then return end
 	for i = 1, #listeners do
 		local listener = listeners[i]
 		if listener then
 			local fn = listener.fn
 			if listener.once then
-				self:removeListener(name, fn)
+				listeners[i] = false
 			end
 			if listener.sync then
 				fn(...)
@@ -60,12 +60,16 @@ function Emitter:emit(name, ...)
 				remove(listeners, i)
 			end
 		end
+		if #listeners == 0 then
+			self._listeners[name] = nil
+		end
 		listeners._removed = nil
 	end
 end
 
 function Emitter:getListeners(name)
 	local listeners = self._listeners[name]
+	if not listeners then return function() end end
 	return wrap(function()
 		for _, listener in ipairs(listeners) do
 			if listener then
@@ -77,6 +81,7 @@ end
 
 function Emitter:getListenerCount(name)
 	local listeners = self._listeners[name]
+	if not listeners then return 0 end
 	local n = 0
 	for _, listener in ipairs(listeners) do
 		if listener then
@@ -88,6 +93,7 @@ end
 
 function Emitter:removeListener(name, fn)
 	local listeners = self._listeners[name]
+	if not listeners then return end
 	for i, listener in ipairs(listeners) do
 		if listener and listener.fn == fn then
 			listeners[i] = false
