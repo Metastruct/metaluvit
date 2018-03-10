@@ -12,7 +12,6 @@ return {
         callback = function(msg,args,line,config)
             local embed = {
                 title = ":globe_with_meridians: Status",
-                fields = {},
                 color = 0x0275d8
             }
 
@@ -24,13 +23,10 @@ return {
 					plyList = "```\n" .. table.concat(data.plylist, ", ") .. "\n```"
 				end
 
-                embed.fields[#embed.fields + 1] = {
-                    name = data.title,
-                    value = ([[
+                embed.description = ([[
 :map: **Map**: `%s`
 :busts_in_silhouette: **%s players**: %s
                     ]]):format(data.map, tostring(data.players), plyList)
-                }
             end
 
             msg:reply({embed=embed})
