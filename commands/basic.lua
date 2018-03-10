@@ -23,12 +23,14 @@ return {
 					plyList = "```\n" .. table.concat(data.plylist, ", ") .. "\n```"
 				end
 
-                embed.fields[#embed.fields + 1] = {
-                    title = data.title
-                    value = ([[
+                local val = ([[
 :map: **Map**: `%s`
 :busts_in_silhouette: **%s players**: %s
-                    ]]):format(data.map, tostring(data.players), plyList)
+                ]]):format(data.map, tostring(data.players), plyList)
+
+                embed.fields[#embed.fields + 1] = {
+                    title = data.title
+                    value = val,
                 }
             end
 
