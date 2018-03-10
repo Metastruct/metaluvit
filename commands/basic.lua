@@ -31,7 +31,6 @@ Server %s
 :map: **Map**: `%s`
 :busts_in_silhouette: **%s players**: %s
                     ]]):format(sts, data.map, tostring(data.players), plyList)
-                ]]
             end
 
             embed.description = wat
