@@ -29,7 +29,7 @@ return {
                 ]]):format(data.map, tostring(data.players), plyList)
 
                 embed.fields[#embed.fields + 1] = {
-                    title = data.title
+                    title = data.title,
                     value = val,
                 }
             end
