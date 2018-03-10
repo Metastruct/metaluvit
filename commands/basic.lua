@@ -12,8 +12,11 @@ return {
         callback = function(msg,args,line,config)
             local embed = {
                 title = ":globe_with_meridians: Status",
-                color = 0x0275d8
+                color = 0x0275d8,
+                fields = {}
             }
+
+
 
 			for sts, data in pairs(status) do
 				local plyList
