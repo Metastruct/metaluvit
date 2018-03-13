@@ -168,7 +168,7 @@ local function handleWS(data,write)
 		local tbl = data.status
 		_G.status[sts] = tbl
 		if client then
-			client:setGame((status["#1"].players or "??").." players on #1 | "..(status["#2"].players or "??").." players on #2 | !status")
+			client:setGame((#status["#1"].players or "??").." players on #1 | "..(#status["#2"].players or "??").." players on #2 | !status")
 		end
 	end
 
@@ -235,7 +235,7 @@ local function handleWS(data,write)
 	end
 
 	if data.shutdown then
-		handleWS({status={players="??",title="Meta Construct "..sts,plylist={},map="gm_unknown"},server=sts})
+		handleWS({status={players={},title="Meta Construct "..sts,map="gm_unknown"},server=sts})
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
