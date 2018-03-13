@@ -27,7 +27,7 @@ return {
 				if dat.plylist == nil or #dat.plylist == 0 then
 					plyList = "."
 				elseif #dat.plylist > 32 then
-					plyList = ": ```\n" .. table.concat(table.slice(dat.plylist, 1, 32), ", ") .. " + " .. (#dat.plylist - 32) .. "more\n```"
+					plyList = ": ```\n" .. table.concat({unpack(dat.plylist, 1, 64)}, ", ") .. " + " .. (#dat.plylist - 32) .. "more\n```"
 				else
 					plyList = ": ```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
 				end
