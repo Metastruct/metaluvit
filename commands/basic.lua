@@ -28,8 +28,8 @@ return {
 				local plyList
 				if #dat.players == 0 then
 					plyList = "."
-				elseif #dat.plylist > 48 then
-					plyList = ": ```\n" .. table.concat({unpack(dat.plylist, 1, 48)}, ", ") .. " + " .. (#dat.plylist - 48) .. "more\n```"
+				elseif #dat.players > 48 then
+					plyList = ": ```\n" .. table.concat({unpack(dat.players, 1, 48)}, ", ") .. " + " .. (#dat.players - 48) .. "more\n```"
 				else
 					plyList = ": ```\n" .. table.concat(dat.players, ", ") .. "\n```"
 				end
