@@ -248,6 +248,7 @@ local function handleWS(data,write)
 	end
 end
 
+local timer = require("timer")
 timer.setInterval(10000, coroutine.wrap(function()
 	if client and status then
 		local str = ""
