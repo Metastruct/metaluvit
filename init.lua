@@ -255,7 +255,7 @@ timer.setInterval(10000, coroutine.wrap(function()
 			str = str .. (status["#1"].players and #status["#1"].players or "??") .. " players on #1 | "
 		end
 		if status["#2"] then
-			str = str .. (status["#2"].players and #status["#1"].players or "??") .. " players on #2 | "
+			str = str .. (status["#2"].players and #status["#2"].players or "??") .. " players on #2 | "
 		end
 		str = str .. "!status"
 
