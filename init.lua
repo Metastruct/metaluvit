@@ -167,9 +167,6 @@ local function handleWS(data,write)
 	if data.status then
 		local tbl = data.status
 		_G.status[sts] = tbl
-		if client then
-			client:setGame((#status["#1"].players or "??").." players on #1 | "..(#status["#2"].players or "??").." players on #2 | !status")
-		end
 	end
 
 	if data.msg then
@@ -250,6 +247,21 @@ local function handleWS(data,write)
 		end)()
 	end
 end
+
+timer.setInterval(10000, coroutine.wrap(function()
+	if client and status then
+		local str = ""
+		if status["#1"] then
+			str = str .. (status["#1"].players and #status["#1"].players or "??") .. " players on #1 | "
+		end
+		if status["#2"] then
+			str = str .. (status["#2"].players and #status["#1"].players or "??") .. " players on #2 | "
+		end
+		str = str .. "!status"
+
+		client:setGame(str)
+	end
+end))
 
 local serverips = {
 	"195.154.166.219",
