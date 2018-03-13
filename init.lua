@@ -253,7 +253,7 @@ timer.setInterval(10000, coroutine.wrap(function()
 	if client and status then
 		local str = ""
 		for k, dat in next, status do
-			str = str .. (dat.players and #dat.players or "??") .. " players on " .. k .. " | "
+			str = str .. (dat.players and #dat.players or "0") .. " players on " .. k .. " | "
 		end
 		str = str .. "!status"
 
