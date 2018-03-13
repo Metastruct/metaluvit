@@ -25,15 +25,15 @@ return {
 			for sts, dat in next, status do
 				local plyList
 				if dat.plylist == nil or #dat.plylist == 0 then
-					plyList = "none."
+					plyList = "."
 				else
-					plyList = "```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
+					plyList = ": ```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
 				end
 
 				embed.fields[#embed.fields + 1] = {
 					name = dat.title,
 					value = ([[:map: **Map**: `%s`
-:busts_in_silhouette: **%s players**: %s]]):format(dat.map, tostring(dat.players), plyList)
+:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(dat.players), plyList)
 				}
 			end
 
