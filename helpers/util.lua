@@ -22,16 +22,6 @@ function string.ToTable ( str )
 	return tbl
 end
 
-function table.slice(tbl, first, last, step)
-	local sliced = {}
-
-	for i = first or 1, last or #tbl, step or 1 do
-		sliced[#sliced+1] = tbl[i]
-	end
-
-	return sliced
-end
-
 local totable = string.ToTable
 local string_sub = string.sub
 local string_find = string.find
