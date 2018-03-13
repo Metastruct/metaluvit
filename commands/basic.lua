@@ -22,7 +22,6 @@ return {
 				fields = {}
 			}
 
-			local wat = ""
 			for sts, dat in next, status do
 				local plyList
 				if dat.plylist == nil or #dat.plylist == 0 then
@@ -31,13 +30,12 @@ return {
 					plyList = "```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
 				end
 
-				wat = wat..([[
-Server %s
-:map: **Map**: `%s`
-:busts_in_silhouette: **%s players**: %s
-				]]):format(sts, dat.map, tostring(dat.players), plyList)
+				embed.fields[#embed.fields + 1] = {
+					name = dat.title,
+					value = ([[:map: **Map**: `%s`
+:busts_in_silhouette: **%s players**: %s]]):format(dat.map, tostring(dat.players), plyList)
+				}
 			end
-			embed.description = wat
 
 			msg:reply({
 				embed = embed
