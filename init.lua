@@ -114,7 +114,7 @@ client:on("messageCreate", function(message)
 				local n = #hasEmbeds
 				for i = 1, n do
 					embeds =	--(hasEmbeds[i].url and hasEmbeds[i].url or "" .. "\n") ..
-								(hasEmbeds[i].title and hasEmbeds[i].title or "" .. "\n") ..
+								(hasEmbeds[i].title and hasEmbeds[i].title or "") ..
 								(hasEmbeds[i].description and hasEmbeds[i].description or "" .. "\n")
 				end
 			end
