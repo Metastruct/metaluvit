@@ -170,15 +170,14 @@ local function handleWS(data,write)
 	end
 
 	if data.msg then
-		local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png", 10)
+		local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png")
 		if Webhook then
 			coroutine.wrap(function()
 				local msg = data.msg.txt
 				if not msg then return end
 
-				Webhook:setAvatar("files/tmp/"..file)
+				Webhook:setAvatar("data:;base64,"..file)
 				Webhook:setName(sts.." "..data.msg.nickname)
-
 
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do

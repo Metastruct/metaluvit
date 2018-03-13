@@ -8,6 +8,7 @@ _G.image = {}
 local fs = require("fs")
 local path = require("path")
 local temp_dir = path.join(process.cwd(), 'files/tmp/')
+local base64 = require("base64")
 
 if (fs.existsSync(temp_dir) ~= true) then
     fs.mkdirSync(temp_dir)
@@ -61,12 +62,7 @@ function image.getDiscordImageURL(msg,args)
     return link
 end
 
-function image.getByURL(url,limit)
+function image.getByURL(url)
     local res,body = http.request("GET", url)
-    local file = tostring(math.random(1,100000))
-    fs.writeFileSync('files/tmp/'..file,body)
-    timer.setTimeout((limit * 1000) or 60000, function()
-        fs.unlinkSync('files/tmp/'..file)
-    end)
-    return file
+    return base64.encode(body)
 end
