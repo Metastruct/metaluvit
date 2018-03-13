@@ -251,11 +251,8 @@ end
 timer.setInterval(10000, coroutine.wrap(function()
 	if client and status then
 		local str = ""
-		if status["#1"] then
-			str = str .. (status["#1"].players and #status["#1"].players or "??") .. " players on #1 | "
-		end
-		if status["#2"] then
-			str = str .. (status["#2"].players and #status["#2"].players or "??") .. " players on #2 | "
+		for k, dat in next, status do
+			str = str .. (dat.players and #dat.players or "??") .. " players on " .. k .. " | "
 		end
 		str = str .. "!status"
 
