@@ -23,6 +23,8 @@ return {
 			}
 
 			for sts, dat in next, status do
+				if not dat.players then dat.players = {} end -- ???
+
 				local plyList
 				if #dat.players == 0 then
 					plyList = "."
