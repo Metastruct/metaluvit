@@ -26,8 +26,8 @@ return {
 				local plyList
 				if dat.plylist == nil or #dat.plylist == 0 then
 					plyList = "."
-				elseif #dat.plylist > 32 then
-					plyList = ": ```\n" .. table.concat({unpack(dat.plylist, 1, 64)}, ", ") .. " + " .. (#dat.plylist - 32) .. "more\n```"
+				elseif #dat.plylist > 64 then
+					plyList = ": ```\n" .. table.concat({unpack(dat.plylist, 1, 64)}, ", ") .. " + " .. (#dat.plylist - 64) .. "more\n```"
 				else
 					plyList = ": ```\n" .. table.concat(dat.plylist, ", ") .. "\n```"
 				end
