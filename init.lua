@@ -97,7 +97,9 @@ client:on("messageCreate", function(message)
 			c:say("#metastruct", message.content)
 		else
 			local hasAttachments = message.attachment
+			local hasEmbeds = message.embeds
 			local attachments = "\n"
+			local embeds = attachments
 			if hasAttachments then
 				if message.attachments then
 					local tbl = message.attachments
@@ -108,6 +110,14 @@ client:on("messageCreate", function(message)
 					attachments = hasAttachments.url
 				end
 			end
+			if hasEmbeds then -- todo make sparate function to handle all objects
+				local n = #hasEmbeds
+				for i = 1, n do
+					embeds = 	n[i].url and n[i].url or "" .. "\n" ..
+								n[i].title and n[i].title or "" .. "\n" ..
+								n[i].description and n[i].description or "" .. "\n"
+				end
+			end
 			local msg = message.content
 			msg = msg:gsub("<@!?(%d-)>", function(id) --  nickname from id
 				return "@" .. getDiscordNick(id)
@@ -115,7 +125,7 @@ client:on("messageCreate", function(message)
 			msg = msg:gsub("<a?(:.-:)%d->", function(id) -- format emotes
 				return id
 			end)
-			c:say("#metastruct", "[" .. message.author.username .. "] " .. msg .. attachments)
+			c:say("#metastruct", "[" .. message.author.username .. "] " .. msg .. embeds ..  attachments)
 		end
 	end
 end)
@@ -168,11 +178,11 @@ local function handleWS(data,write)
 			coroutine.wrap(function()
 				local msg = data.msg.txt
 				if not msg then return end
-	
+
 				Webhook:setAvatar("files/tmp/"..file)
 				Webhook:setName(sts.." "..data.msg.nickname)
 
-	
+
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
 						local uid = findDiscordUserID(mention)
@@ -181,7 +191,7 @@ local function handleWS(data,write)
 						end
 					end
 				end
-	
+
 				msg = cleanContent(msg)
 
 				Webhook:send(msg)
