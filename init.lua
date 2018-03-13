@@ -113,7 +113,7 @@ client:on("messageCreate", function(message)
 			if hasEmbeds then -- todo make sparate function to handle all objects
 				local n = #hasEmbeds
 				for i = 1, n do
-					embeds =	(hasEmbeds[i].url and hasEmbeds[i].url or "" .. "\n") ..
+					embeds =	--(hasEmbeds[i].url and hasEmbeds[i].url or "" .. "\n") ..
 								(hasEmbeds[i].title and hasEmbeds[i].title or "" .. "\n") ..
 								(hasEmbeds[i].description and hasEmbeds[i].description or "" .. "\n")
 				end
