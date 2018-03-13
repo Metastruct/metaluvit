@@ -249,7 +249,7 @@ local function handleWS(data,write)
 end
 
 local timer = require("timer")
-timer.setInterval(10000, coroutine.wrap(function()
+timer.setInterval(10000, function() coroutine.wrap(function()
 	if client and status then
 		local str = ""
 		for k, dat in next, status do
@@ -259,6 +259,7 @@ timer.setInterval(10000, coroutine.wrap(function()
 
 		client:setGame(str)
 	end
+end)()
 end))
 
 local serverips = {
