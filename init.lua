@@ -169,31 +169,28 @@ local function handleWS(data,write)
 		_G.status[sts] = tbl
 	end
 
-	if data.msg then
-		if Webhook then
-			-- local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png")
-			coroutine.wrap(function()
-				local msg = data.msg.txt
-				if not msg then return end
+	if data.msg and Webhook then
+		-- local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png")
+		coroutine.wrap(function()
+			local msg = data.msg.txt
+			if not msg then return end
 
-				if msg:match("@%w+") then
-					for mention in msg:gmatch("@(%w+)") do
-						local uid = findDiscordUserID(mention)
-						if uid then
-							msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
-						end
+			if msg:match("@%w+") then
+				for mention in msg:gmatch("@(%w+)") do
+					local uid = findDiscordUserID(mention)
+					if uid then
+						msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
 					end
 				end
+			end
 
-				msg = cleanContent(msg)
+			msg = cleanContent(msg)
 
-				Webhook:send({
-					username = sts.." "..data.msg.nickname,
-					avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
-					content = msg
-				})
-			end)()
-		end
+			Webhook:send(msg, {
+				name = sts.." "..data.msg.nickname,
+				avatarURL = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
+			})
+		end)()
 	end
 
 	if data.disconnect then
