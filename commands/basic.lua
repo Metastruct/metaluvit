@@ -1,5 +1,6 @@
 return {
     ping = {
+	forusers = true,
         description = "Simple command.",
         callback = function(msg,args,line,config)
             msg:reply("Pong")
