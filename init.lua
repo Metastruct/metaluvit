@@ -199,13 +199,13 @@ local function handleWS(data,write)
 				embed = {
 					author = {
 						icon_url = data.disconnect.avatar or "http://i.imgur.com/ovW4MBM.png",
-						name = data.disconnect.nickname .. " has left the server."
+						name = data.disconnect.nickname .. " has left the server.",
+						url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
 					},
 					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
 						text = "Server "..sts
 					},
-					url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid,
 					color = 0xB54343
 				}
 			})
@@ -218,12 +218,12 @@ local function handleWS(data,write)
 				embed = {
 					author = {
 						icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
-						name = data.spawn.nickname .. " has spawned."
+						name = data.spawn.nickname .. " has spawned.",
+						url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
 					},
 					footer = {
 						text = "Server "..sts
 					},
-					url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid,
 					color = 0x4BB543
 				}
 			})
