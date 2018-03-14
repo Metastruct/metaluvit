@@ -245,6 +245,21 @@ local function handleWS(data,write)
 			})
 		end)()
 	end
+	if data.notify then
+		if not data.notify.text then return end
+		coroutine.wrap(function()
+			channel:send({
+				embed = {
+					title = data.notify.title or "",
+					description = data.notify.text,
+					footer = {
+						text = "Server "..sts
+					},
+					color = data.notify.color or 0xffff00
+				}
+			})
+		end)()
+	end
 end
 
 local timer = require("timer")
