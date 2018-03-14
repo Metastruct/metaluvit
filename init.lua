@@ -219,7 +219,7 @@ local function handleWS(data,write)
 					author = {
 						icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
 						name = data.spawn.nickname .. " has spawned.",
-						url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
+						url = "http://steamcommunity.com/profiles/" .. data.spawn.steamid
 					},
 					footer = {
 						text = "Server "..sts
