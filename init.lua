@@ -203,8 +203,9 @@ local function handleWS(data,write)
 					},
 					description = "Reason: `"..data.disconnect.reason.."`",
 					footer = {
-						text = data.disconnect.steamid.." | Server "..sts
+						text = "Server "..sts
 					},
+					url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid,
 					color = 0xB54343
 				}
 			})
@@ -220,8 +221,9 @@ local function handleWS(data,write)
 						name = data.spawn.nickname .. " has spawned."
 					},
 					footer = {
-						text = data.spawn.steamid.." | Server "..sts
+						text = "Server "..sts
 					},
+					url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid,
 					color = 0x4BB543
 				}
 			})
