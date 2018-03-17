@@ -27,7 +27,7 @@ return {
 				}
 			}
 
-			for i = 1, servers do
+			for i = 1, #servers do
 				local embed = {
 					title = ":globe_with_meridians: Status",
 					color = 0x0275d8,
