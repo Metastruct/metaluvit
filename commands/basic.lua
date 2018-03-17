@@ -47,9 +47,9 @@ return {
 					plyList = ": ```\n" .. table.concat(dat.players, ", ") .. "\n```"
 				end
 
-				author.name = dat.title or "???"
-				author.url = server.url or ""
-				author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
+				embed.author.name = dat.title or "???"
+				embed.author.url = server.url or ""
+				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
 				embed.fields[#embed.fields + 1] = {
 					name = " ",
