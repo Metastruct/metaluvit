@@ -203,8 +203,10 @@ local function handleWS(data,write)
 						url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
 					},
 					fields = data.disconnect.reason ~= "" and {
-						name = "Reason:",
-						value = data.disconnect.reason
+						[1] = {
+							name = "Reason:",
+							value = data.disconnect.reason
+						}
 					},
 					footer = {
 						text = "Server "..sts
