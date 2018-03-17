@@ -53,7 +53,7 @@ return {
 				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
 				embed.fields[#embed.fields + 1] = {
-					name = " ",
+					name = "⁣",
 					value = ([[:map: **Map**: `%s`
 	:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
 				}
