@@ -34,9 +34,9 @@ return {
 				}
 			}
 
-			local server = servers[dat.server] or {} -- why don't
 			for sts, dat in next, status do
 				if not dat.players then dat.players = {} end -- ???
+				local server = servers[dat.server] or {}
 
 				local plyList
 				if #dat.players == 0 then
