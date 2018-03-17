@@ -16,14 +16,28 @@ return {
 		forusers = true,
 		description = "Status of game server.",
 		callback = function(msg,args,line,config)
-			local embed = {
-				title = ":globe_with_meridians: Status",
-				color = 0x0275d8,
-				fields = {}
+			local servers = {  -- move to config file?
+				[1] = {
+					url = "steam://connect/g1.metastruct.net",
+					icon = "http://metastruct.net/static/DefaultServerIcon.png" -- todo make icons for both
+				},
+				[2] = {
+					url = "steam://connect/g2.metastruct.net:27018",
+					icon = "http://metastruct.net/static/DefaultServerIcon.png"
+				}
 			}
 
-			for sts, dat in next, status do
+			for i = 1, servers do
+				local embed = {
+					title = ":globe_with_meridians: Status",
+					color = 0x0275d8,
+					author = {},
+					fields = {}
+				}
+				--for sts, dat in next, status do
+				local dat = status["#" .. i]
 				if not dat.players then dat.players = {} end -- ???
+				local server = servers[i] or {}
 
 				local plyList
 				if #dat.players == 0 then
@@ -34,16 +48,21 @@ return {
 					plyList = ": ```\n" .. table.concat(dat.players, ", ") .. "\n```"
 				end
 
-				embed.fields[#embed.fields + 1] = {
-					name = dat.title,
-					value = ([[:map: **Map**: `%s`
-:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
-				}
-			end
+				embed.author.name = dat.title or "???"
+				embed.author.url = server.url
+				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
-			msg:reply({
-				embed = embed
-			})
+				embed.fields[#embed.fields + 1] = {
+					name = " ",
+					value = ([[:map: **Map**: `%s`
+	:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
+				}
+			--	end
+
+				msg:reply({
+					embed = embed
+				})
+			end
 			return true
 		end
 	}
