@@ -163,7 +163,7 @@ local function handleWS(data,write)
 	if type(data) == "string" then
 		data = json.parse(data) or {}
 	end
-	local sts = data.server or "??"
+	local sts = "#" .. (data.server or "??")
 	if data.status then
 		local tbl = data.status
 		_G.status[sts] = tbl
@@ -187,7 +187,7 @@ local function handleWS(data,write)
 			msg = cleanContent(msg)
 
 			Webhook:send(msg, {
-				name = "#"..sts.." "..data.msg.nickname,
+				name = sts.." "..data.msg.nickname,
 				avatarURL = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
 			})
 		end)()
@@ -209,7 +209,7 @@ local function handleWS(data,write)
 						}
 					},
 					footer = {
-						text = "Server #"..sts
+						text = "Server "..sts
 					},
 					color = 0xB54343
 				}
@@ -227,7 +227,7 @@ local function handleWS(data,write)
 						url = "http://steamcommunity.com/profiles/" .. data.spawn.steamid
 					},
 					footer = {
-						text = "Server #"..sts
+						text = "Server "..sts
 					},
 					color = 0x4BB543
 				}
@@ -236,14 +236,14 @@ local function handleWS(data,write)
 	end
 
 	if data.shutdown then
-		handleWS({status={players={},title="Meta Construct #"..sts,map="gm_unknown"},server=sts})
+		handleWS({status={players={},title="Meta Construct "..sts,map="gm_unknown"},server=sts})
 		coroutine.wrap(function()
 			channel:send({
 				embed = {
-					title = "Server #"..sts.." shutting down...",
+					title = "Server "..sts.." shutting down...",
 					description = "Resetting status...",
 					footer = {
-						text = "Server #"..sts
+						text = "Server "..sts
 					},
 					color = 0x0275d8
 				}
@@ -258,7 +258,7 @@ local function handleWS(data,write)
 					title = data.notify.title or "",
 					description = data.notify.text,
 					footer = {
-						text = "Server #"..sts
+						text = "Server "..sts
 					},
 					color = data.notify.color or 0xffff00
 				}
