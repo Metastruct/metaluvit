@@ -18,11 +18,11 @@ return {
 		callback = function(msg,args,line,config)
 			local servers = {  -- move to config file?
 				[1] = {
-					url = "steam://connect/g1.metastruct.net",
+					url = "https://metastruct.net/join/eu1",
 					icon = "http://metastruct.net/static/DefaultServerIcon.png" -- todo make icons for both
 				},
 				[2] = {
-					url = "steam://connect/g2.metastruct.net:27018",
+					url = "https://metastruct.net/join/eu2",
 					icon = "http://metastruct.net/static/DefaultServerIcon.png"
 				}
 			}
@@ -34,7 +34,6 @@ return {
 					author = {},
 					fields = {}
 				}
-				--for sts, dat in next, status do
 				local dat = status["#" .. i]
 				if not dat.players then dat.players = {} end -- ???
 				local server = servers[i] or {}
@@ -57,7 +56,6 @@ return {
 					value = ([[:map: **Map**: `%s`
 	:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
 				}
-			--	end
 
 				msg:reply({
 					embed = embed
