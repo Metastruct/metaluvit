@@ -181,7 +181,7 @@ local function handleWS(data,write)
 						end
 					end
 				end
-	
+
 				msg = cleanContent(msg)
 
 				Webhook:send(msg)

@@ -50,7 +50,7 @@ return function(object,callback)
                             msg:reply("Sorry, commands can not be used in DMs.")
                             return
                     end
-                    
+
                     if not obj.forusers then
                         if not msg.member:hasRole(object.groups.devs) then
                             msg:reply("You cannot access this command!")
