@@ -154,7 +154,10 @@ local function HandleIRC(from, to, msg)
 	--safemessage = safemessage:gsub("_", "\\_") -- breaks urls
 	safemessage = safemessage:gsub("*", "\\*")
 
-	channel:send(id .. safemessage)
+	pcall(function()
+		channel:send(id .. safemessage)
+	end)
+
 end
 
 local function handleWS(data,write)
