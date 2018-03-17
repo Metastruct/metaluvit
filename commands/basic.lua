@@ -19,9 +19,22 @@ return {
 			local embed = {
 				title = ":globe_with_meridians: Status",
 				color = 0x0275d8,
+				author = {},
 				fields = {}
 			}
 
+			local servers = {  -- move to config file?
+				[1] = {
+					url = "steam://connect/g1.metastruct.net",
+					icon = "http://metastruct.net/static/DefaultServerIcon.png" -- todo make icons for both
+				},
+				[2] = {
+					url = "steam://connect/g2.metastruct.net:27018",
+					icon = "http://metastruct.net/static/DefaultServerIcon.png"
+				}
+			}
+
+			local server = servers[dat.server] or {} -- why don't
 			for sts, dat in next, status do
 				if not dat.players then dat.players = {} end -- ???
 
@@ -34,8 +47,12 @@ return {
 					plyList = ": ```\n" .. table.concat(dat.players, ", ") .. "\n```"
 				end
 
+				author.name = dat.title or "???"
+				author.url = server.url or ""
+				author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
+
 				embed.fields[#embed.fields + 1] = {
-					name = dat.title,
+					name = " ",
 					value = ([[:map: **Map**: `%s`
 :busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
 				}
