@@ -269,7 +269,7 @@ local function handleWS(data,write)
 		end)()
 	end
 	if data.embed then
-		if type(data.embed) ~= "table" then return end
+		if type(data.embed) ~= "table" or next(data.embed) == nil then return end
 		local embed = data.embed
 
 		embed.footer = data.server and {text = "Server " .. sts}
