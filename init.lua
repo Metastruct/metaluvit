@@ -289,6 +289,7 @@ local function handleWS(data,write)
 		if type(data.webhook) ~= "table" or next(data.webhook) == nil then return end
 		local wh = data.webhook
 		if wh.content or wh.embeds then
+		wh.content = wh.content and cleanContent(wh.content)
 			wrap(function()
 				local ok, why = doWebhook(wh)
 				if not ok then channel:send( EE(why) ) end
