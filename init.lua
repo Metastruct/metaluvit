@@ -79,7 +79,7 @@ local function EE(...)
 	return {
 		embed = {
 			title = "Error:",
-			description = "```" .. sub(tostring(...), 2000) .. "```",
+			description = "```" .. sub(tostring(...), 0, 2000) .. "```",
 			color = 0xff0000
 		}
 	}
