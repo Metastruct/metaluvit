@@ -281,16 +281,19 @@ local function handleWS(data,write)
 			})
 		end)()
 	end
-	if data.embed then
-		if type(data.embed) ~= "table" or next(data.embed) == nil then return end
-		local embed = data.embed
-
-		embed.footer = data.server and {text = "Server " .. sts}
-
-		wrap(function()
-			local ok, why = channel:send({ embed = embed, content = data.content })
-			if not ok then channel:send( EE(why) ) end
-		end)()
+	if data.webhook then
+		if type(data.webhook) ~= "table" or next(data.webhook) == nil then return end
+		local wh = data.webhook
+		if wh.content or wh.embeds then
+			wrap(function()
+				local ok, why = Webhook:send(wh)
+				if not ok then channel:send( EE(why) ) end
+			end)()
+		else
+			wrap(function()
+				channel:send( EE("received invalid embed?") )
+			end)()
+		end
 	end
 end
 
