@@ -87,15 +87,18 @@ end
 local http = require('http')
 require("helpers/image")
 
-local Webhook
+
+local Webhook = string.Split(config.webhook, "/")
+
+local function doWebhook(tbl)
+	return client and client._api:executeWebhook(Webhook[1], Webhook[2], tbl)
+end
+
 
 client:on("ready", function()
 	guild = client:getGuild(serverid)
 	channel = guild:getChannel(channelid)
 	print("Logged in as " .. client.user.username)
-
-	local meme = string.Split(config.webhook, "/")
-	Webhook = discordia.WebhookClient(meme[1], meme[2], {name = "Discordia's new era!"})
 end)
 
 client:on("messageCreate", function(message)
@@ -202,9 +205,10 @@ local function handleWS(data,write)
 
 			msg = cleanContent(msg)
 
-			Webhook:send(msg, {
-				name = sts.." "..data.msg.nickname,
-				avatarURL = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
+			doWebhook({
+				username = sts.." "..data.msg.nickname,
+				avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
+				content = msg
 			})
 		end)()
 	end
@@ -286,7 +290,7 @@ local function handleWS(data,write)
 		local wh = data.webhook
 		if wh.content or wh.embeds then
 			wrap(function()
-				local ok, why = Webhook:send(wh.content, {name = wh.username, avatarURL = wh.avatar_url, embeds = wh.embeds})
+				local ok, why = doWebhook(wh)
 				if not ok then channel:send( EE(why) ) end
 			end)()
 		else
