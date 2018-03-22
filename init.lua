@@ -75,6 +75,15 @@ local function findDiscordUserID(name)
 	return usr and usr.id
 end
 
+local function EE(...)
+	return {
+		embed = {
+			title = "Error:",
+			description = "```" .. sub(tostring(...), 2000) .. "```",
+			color = 0xff0000
+		}
+	}
+end
 local http = require('http')
 require("helpers/image")
 
@@ -279,7 +288,8 @@ local function handleWS(data,write)
 		embed.footer = data.server and {text = "Server " .. sts}
 
 		wrap(function()
-			channel:send({ embed = embed, content = data.content })
+			local ok, why = channel:send({ embed = embed, content = data.content })
+			if not ok then channel:send( EE(why) ) end
 		end)()
 	end
 end
