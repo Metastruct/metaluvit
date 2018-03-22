@@ -279,7 +279,7 @@ local function handleWS(data,write)
 		embed.footer = data.server and {text = "Server " .. sts}
 
 		wrap(function()
-			channel:send({ embed = embed })
+			channel:send({ embed = embed, content = data.content })
 		end)()
 	end
 end
