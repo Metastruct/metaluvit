@@ -13,6 +13,10 @@ homepage = "https://metastruct.net"
 _G.require = require
 setfenv(1, _G)
 
+local wrap = coroutine.wrap
+local sub = string.sub
+local len = string.len
+
 require("./helpers/util.lua")
 
 _G.config = require("config")
@@ -32,12 +36,12 @@ local client = discordia.Client {
 }
 local IRC = require ("irc")
 
-function string.starts(String,Start)
-	return string.sub(String,1,string.len(Start)) == Start
+local function starts(String,Start)
+	return sub(String,1,len(Start)) == Start
 end
 
-function string.ends(String,End)
-	return End == "" or string.sub(String,-string.len(End)) == End
+local function ends(String,End)
+	return End == "" or sub(String,-len(End)) == End
 end
 
 local json = require('json').use_lpeg()
@@ -174,7 +178,7 @@ local function handleWS(data,write)
 
 	if data.msg and Webhook then
 		-- local file = image.getByURL(data.msg.avatar or "http://i.imgur.com/ovW4MBM.png")
-		coroutine.wrap(function()
+		wrap(function()
 			local msg = data.msg.txt
 			if not msg then return end
 
@@ -197,7 +201,7 @@ local function handleWS(data,write)
 	end
 
 	if data.disconnect then
-		coroutine.wrap(function()
+		wrap(function()
 			channel:send({
 				embed = {
 					author = {
@@ -221,7 +225,7 @@ local function handleWS(data,write)
 	end
 
 	if data.spawn then
-		coroutine.wrap(function()
+		wrap(function()
 			channel:send({
 				embed = {
 					author = {
@@ -240,7 +244,7 @@ local function handleWS(data,write)
 
 	if data.shutdown then
 		handleWS({status={players={},title="Meta Construct "..sts,map="gm_unknown"},server=sts})
-		coroutine.wrap(function()
+		wrap(function()
 			channel:send({
 				embed = {
 					title = "Server "..sts.." shutting down...",
@@ -255,7 +259,7 @@ local function handleWS(data,write)
 	end
 	if data.notify then
 		if not data.notify.text then return end
-		coroutine.wrap(function()
+		wrap(function()
 			channel:send({
 				embed = {
 					title = data.notify.title or "",
@@ -274,7 +278,7 @@ local function handleWS(data,write)
 
 		embed.footer = data.server and {text = "Server " .. sts}
 
-		coroutine.wrap(function()
+		wrap(function()
 			channel:send({ embed = embed })
 		end)()
 	end
@@ -289,7 +293,7 @@ timer.setInterval(10000, function()
 		end
 		str = str .. "!status"
 
-		coroutine.wrap(function()
+		wrap(function()
 			client:setGame(str)
 		end)()
 	end
@@ -344,8 +348,8 @@ local wlit = require('weblit-app')
 c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
-	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not string.starts(from,"meta")) then
-		coroutine.wrap(function() HandleIRC(from, to, msg) end)()
+	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not starts(from,"meta")) then
+		wrap(function() HandleIRC(from, to, msg) end)()
 	end
 
 end)
