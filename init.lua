@@ -206,7 +206,7 @@ local function handleWS(data,write)
 			msg = cleanContent(msg)
 
 			doWebhook({
-				username = sts .. " " .. (#data.msg.nickname > 28 and (data.msg.nickname:sub(1, 28) .. "...") or data.msg.nickname),
+				username = sts .. " " .. (#data.msg.nickname > 26 and (data.msg.nickname:sub(1, 26) .. "...") or data.msg.nickname),
 				avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
 				content = msg
 			})
