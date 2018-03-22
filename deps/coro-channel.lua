@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/coro-channel"
-  version = "3.0.0"
+  version = "3.0.1"
   homepage = "https://github.com/luvit/lit/blob/master/deps/coro-channel.lua"
   description = "An adapter for wrapping uv streams as coro-streams."
   tags = {"coro", "adapter"}
@@ -24,7 +24,7 @@ local function makeCloser(socket)
     closed = true
     if not closer.readClosed then
       closer.readClosed = true
-      if closer.onClose() then
+      if closer.onClose then
         closer.onClose()
       end
     end
@@ -130,8 +130,12 @@ local function makeWrite(socket, closer)
     if chunk == nil then
       closer.written = true
       closer.check()
-      socket:shutdown(wait())
-      return coroutine.yield()
+      local success, err = socket:shutdown(wait())
+      if not success then
+        return nil, err
+      end
+      err = coroutine.yield()
+      return not err, err
     end
 
     local success, err = socket:write(chunk, wait())

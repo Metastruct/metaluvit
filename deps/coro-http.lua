@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/coro-http"
-  version = "3.0.0"
+  version = "3.1.0"
   dependencies = {
     "creationix/coro-net@3.0.0",
     "luvit/http-codec@3.0.0"
@@ -58,7 +58,7 @@ end
 
 local connections = {}
 
-local function getConnection(host, port, tls)
+local function getConnection(host, port, tls, timeout)
   for i = #connections, 1, -1 do
     local connection = connections[i]
     if connection.host == host and connection.port == port and connection.tls == tls then
@@ -75,6 +75,7 @@ local function getConnection(host, port, tls)
     host = host,
     port = port,
     tls = tls,
+    timeout = timeout,
     encode = httpCodec.encoder(),
     decode = httpCodec.decoder()
   })
@@ -101,9 +102,9 @@ local function saveConnection(connection)
   connection.socket:unref()
 end
 
-local function request(method, url, headers, body)
+local function request(method, url, headers, body, timeout)
   local uri = parseUrl(url)
-  local connection = getConnection(uri.hostname, uri.port, uri.tls)
+  local connection = getConnection(uri.hostname, uri.port, uri.tls, timeout)
   local read = connection.read
   local write = connection.write
 

@@ -9,7 +9,7 @@ return {
     dependencies = {
         "luvit/require",
         "luvit/pretty-print",
-        "PurgePJ/Discordia",
+        "SinisterRectus/discordia",
         "squeek502/irc@0.3.4",
         "creationix/weblit@3.1.0"
     }
