@@ -96,7 +96,7 @@ client:on("messageCreate", function(message)
 			return
 		end]]
 
-		if message.content:starts(".") and message.content ~= ".status" and message.content:len() > 1 then
+		if starts(message.content, ".") and message.content ~= ".status" and message.content:len() > 1 then
 			c:say("#metastruct", "Command call requested by " .. message.author.username .. "#" .. message.author.discriminator .. ":")
 			c:say("#metastruct", message.content)
 		else
