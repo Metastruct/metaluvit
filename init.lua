@@ -286,7 +286,7 @@ local function handleWS(data,write)
 		local wh = data.webhook
 		if wh.content or wh.embeds then
 			wrap(function()
-				local ok, why = Webhook:send(wh)
+				local ok, why = Webhook:send({content = wh.content, name = wh.username, avatarURL = wh.avatar_url, embeds = wh.embeds})
 				if not ok then channel:send( EE(why) ) end
 			end)()
 		else
