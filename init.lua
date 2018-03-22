@@ -268,6 +268,16 @@ local function handleWS(data,write)
 			})
 		end)()
 	end
+	if data.embed then
+		if type(data.embed) ~= "table" then return end
+		local embed = data.embed
+
+		embed.footer = data.server and {text = "Server " .. sts}
+
+		coroutine.wrap(function()
+			channel:send({ embed = embed })
+		end)()
+	end
 end
 
 local timer = require("timer")
