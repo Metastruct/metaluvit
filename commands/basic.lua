@@ -29,10 +29,8 @@ return {
 
 			for i = 1, #servers do
 				local embed = {
-					title = ":globe_with_meridians: Status",
 					color = 0x0275d8,
-					author = {},
-					fields = {}
+					author = {}
 				}
 				local dat = status["#" .. i]
 				if not dat.players then dat.players = {} end -- ???
@@ -51,11 +49,8 @@ return {
 				embed.author.url = server.url
 				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
-				embed.fields[#embed.fields + 1] = {
-					name = "⁣",
-					value = ([[:map: **Map**: `%s`
-	:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
-				}
+				embed.description = ([[map: **Map**: `%s`
+:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
 
 				msg:reply({
 					embed = embed
