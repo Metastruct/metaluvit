@@ -49,7 +49,7 @@ return {
 				embed.author.url = server.url
 				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
-				embed.description = ([[**Map**: `%s`
+				embed.description = ([[:map: **Map**: `%s`
 :busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
 
 				msg:reply({
