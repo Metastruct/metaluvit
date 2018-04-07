@@ -52,7 +52,7 @@ return function(object,callback)
                 if not cmd == command then return end
                 
                 table.remove(args, 1)
-                local line = msg.content:sub((combine.." "):len(),msg.content:len())
+                local line = table.concat(args, ' ')
                 
                 if not msg.member then
                     return msg:reply("Sorry, commands can not be used in DMs.")
