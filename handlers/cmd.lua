@@ -46,6 +46,8 @@ return function(object,callback)
             for cmd, obj in pairs(v) do
                 local args = string.Split(msg.content, " ")
                 local prefix = msg.content:match('^' .. object.prefix)
+                if not prefix then return end
+                
                 local command = args[1]:sub(#prefix + 1, #args[1])
                 if not cmd == command then return end
                 
