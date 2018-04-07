@@ -49,7 +49,7 @@ return function(object,callback)
                 if not prefix then return end
                 
                 local command = args[1]:sub(#prefix + 1, #args[1])
-                if not cmd ~= command then return end
+                if cmd ~= command then return end
                 
                 table.remove(args, 1)
                 local line = table.concat(args, ' ')
