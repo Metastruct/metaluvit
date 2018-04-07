@@ -42,30 +42,31 @@ return function(object,callback)
     }
 
     client:on("messageCreate", function(msg)
-        for k,v in pairs(object.commands) do
-            for cmd,obj in pairs(v) do
-                local combine = object.prefix..cmd
-                if msg.content:match("^" .. combine .. "%s?") then
-                    if not msg.member then
-                            msg:reply("Sorry, commands can not be used in DMs.")
-                            return
-                    end
-
-                    if not obj.forusers then
-                        if not msg.member:hasRole(object.groups.devs) then
-                            msg:reply("You cannot access this command!")
-                            return
-                        end
-                        if(obj.admin and not msg.member:hasRole(object.groups.admins)) then
-                            msg:reply("This command is for `Administrator` role's users only.")
-                            return
-                        end
-                    end
-                    local args = string.Split(msg.content, " ")
-                    table.remove(args,1)
-                    local line = msg.content:sub((combine.." "):len(),msg.content:len())
-                    local success,err = obj.callback(msg,args,line,object)
+        for k, v in pairs(object.commands) do
+            for cmd, obj in pairs(v) do
+                local args = string.Split(msg.content, " ")
+                local prefix = msg.content:match('^' .. object.prefix)
+                local command = args[1]:sub(#prefix + 1, #args[1])
+                if not cmd == command then return end
+                
+                table.remove(args, 1)
+                local line = msg.content:sub((combine.." "):len(),msg.content:len())
+                
+                if not msg.member then
+                    return msg:reply("Sorry, commands can not be used in DMs.")
                 end
+
+                if not obj.forusers then
+                        if not msg.member:hasRole(object.groups.devs) then
+                            return msg:reply("You cannot access this command!")
+                        end
+
+                        if obj.admin and not msg.member:hasRole(object.groups.admins) then
+                            return msg:reply("This command is for `Administrator` role's users only.")
+                        end
+                end
+                
+                local success,err = obj.callback(msg,args,line,object)
             end
         end
     end)
