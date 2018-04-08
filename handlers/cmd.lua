@@ -49,6 +49,8 @@ return function(object,callback)
                 if not prefix then return end
                 
                 local command = args[1]:sub(#prefix + 1, #args[1])
+                print("DEBUG: command,cmd ="..tostring(command)..", "..tostring(cmd))
+                print("DEBUG: cmd ~= command "..tostring(cmd ~= command))
                 if cmd ~= command then return end
                 
                 table.remove(args, 1)

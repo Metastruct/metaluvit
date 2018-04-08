@@ -146,7 +146,7 @@ client:on("messageCreate", function(message)
 end)
 
 local function cleanContent(str)
-	return str:gsub('@everyone', 'everyone'):gsub('@here', 'here')
+	return str:gsub('(@+)everyone', 'everyone'):gsub('(@+)here', 'here')
 end
 
 local function HandleIRC(from, to, msg)
