@@ -49,28 +49,29 @@ return function(object,callback)
                 if not prefix then return end
                 
                 local command = args[1]:sub(#prefix + 1, #args[1])
-                print("DEBUG: command,cmd ="..tostring(command)..", "..tostring(cmd))
-                print("DEBUG: cmd ~= command "..tostring(cmd ~= command))
-                if cmd ~= command then return end
+                local ok = true
+                if cmd ~= command then ok = false end
                 
-                table.remove(args, 1)
-                local line = table.concat(args, ' ')
-                
-                if not msg.member then
-                    return msg:reply("Sorry, commands can not be used in DMs.")
-                end
+                if ok then
+                    table.remove(args, 1)
+                    local line = table.concat(args, ' ')
 
-                if not obj.forusers then
-                        if not msg.member:hasRole(object.groups.devs) then
-                            return msg:reply("You cannot access this command!")
-                        end
+                    if not msg.member then
+                        return msg:reply("Sorry, commands can not be used in DMs.")
+                    end
 
-                        if obj.admin and not msg.member:hasRole(object.groups.admins) then
-                            return msg:reply("This command is for `Administrator` role's users only.")
-                        end
+                    if not obj.forusers then
+                            if not msg.member:hasRole(object.groups.devs) then
+                                return msg:reply("You cannot access this command!")
+                            end
+
+                            if obj.admin and not msg.member:hasRole(object.groups.admins) then
+                                return msg:reply("This command is for `Administrator` role's users only.")
+                            end
+                    end
+
+                    local success,err = obj.callback(msg,args,line,object)
                 end
-                
-                local success,err = obj.callback(msg,args,line,object)
             end
         end
     end)
