@@ -350,7 +350,7 @@ local wlit = require('weblit-app')
 		for message in read do
 			message.mask = nil
 			local success, err = pcall(handleWS, message.payload, write)
-+			if not success then print(err) end
+			if not success then print(err) end
 			write(message)
 		end
 		write()
