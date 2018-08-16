@@ -44,10 +44,7 @@ local function ends(String,End)
 end
 
 local json = require('json').use_lpeg()
-_G.status = {
-	["#1"] = {},
-	["#2"] = {}
-}
+_G.status = {}
 
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
 local guild
