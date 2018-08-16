@@ -28,11 +28,12 @@ return {
 			}
 
 			for i = 1, #servers do
+				local dat = status["#" .. i]
+				if not dat then return end
 				local embed = {
 					color = 0x0275d8,
 					author = {}
 				}
-				local dat = status["#" .. i]
 				if not dat.players then dat.players = {} end -- ???
 				local server = servers[i] or {}
 
