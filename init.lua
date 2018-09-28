@@ -43,7 +43,7 @@ local function ends(String,End)
 	return End == "" or sub(String,-len(End)) == End
 end
 
-local json = require('json').use_lpeg()
+local json = require("json").use_lpeg()
 _G.status = {}
 
 local c = IRC:new ("irc.3kv.in", "Discord", {auto_connect = true, auto_join = {"#metastruct"}})
@@ -80,7 +80,7 @@ local function EE(...)
 		}
 	}
 end
-local http = require('http')
+local http = require("http")
 require("helpers/image")
 
 
@@ -143,10 +143,10 @@ client:on("messageCreate", function(message)
 end)
 
 local function cleanContent(str)
-	return str:gsub('(@+)everyone', 'everyone'):gsub('(@+)here', 'here')
+	return str:gsub("(@+)everyone", "everyone"):gsub("(@+)here", "here")
 end
 
-local function HandleIRC(from, to, msg)
+local function handleIRC(from, to, msg)
 	local id = "**<" .. from .. ">** "
 	if msg:match("@%w+") then
 		for mention in msg:gmatch("@(%w+)") do
@@ -169,7 +169,6 @@ local function HandleIRC(from, to, msg)
 	pcall(function()
 		channel:send(id .. safemessage)
 	end)
-
 end
 
 local WSEvents = {
@@ -182,7 +181,7 @@ local WSEvents = {
 			wrap(function()
 				local msg = data.msg.txt
 				if not msg then return end
-				
+
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
 						local uid = findDiscordUserID(mention)
@@ -191,11 +190,11 @@ local WSEvents = {
 						end
 					end
 				end
-				
+
 				msg = cleanContent(msg)
-				
-				local username = (#data.msg.nickname > 26 and (data.msg.nickname:sub(1, 26) .. "...") or data.msg.nickname)
-				
+
+				local username = #data.msg.nickname > 26 and (data.msg.nickname:sub(1, 26) .. "...") or data.msg.nickname
+
 				doWebhook({
 					username = sts .. " " .. username,
 					avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
@@ -206,88 +205,88 @@ local WSEvents = {
 	end,
 	disconnect = function(sts,data)
 		 wrap(function()
-                        channel:send({
-                                embed = {
-                                        author = {
-                                                icon_url = data.disconnect.avatar or "http://i.imgur.com/ovW4MBM.png",
-                                                name = data.disconnect.nickname .. " has left the server.",
-                                                url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
-                                        },
-                                        fields = data.disconnect.reason ~= "" and {
-                                                [1] = {
-                                                        name = "Reason:",
-                                                        value = data.disconnect.reason
-                                                }
-                                        },
-                                        footer = {
-                                                text = "Server "..sts
-                                        },
-                                        color = 0xB54343
-                                }
-                        })
-                end)()
+						channel:send({
+								embed = {
+										author = {
+												icon_url = data.disconnect.avatar or "http://i.imgur.com/ovW4MBM.png",
+												name = data.disconnect.nickname .. " has left the server.",
+												url = "http://steamcommunity.com/profiles/" .. data.disconnect.steamid
+										},
+										fields = data.disconnect.reason ~= "" and {
+												[1] = {
+														name = "Reason:",
+														value = data.disconnect.reason
+												}
+										},
+										footer = {
+												text = "Server " .. sts
+										},
+										color = 0xB54343
+								}
+						})
+				end)()
 	end,
 	spawn = function(sts,data)
 		 wrap(function()
-                        channel:send({
-                                embed = {
-                                        author = {
-                                                icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
-                                                name = data.spawn.nickname .. " has spawned.",
-                                                url = "http://steamcommunity.com/profiles/" .. data.spawn.steamid
-                                        },
-                                        footer = {
-                                                text = "Server "..sts
-                                        },
-                                        color = 0x4BB543
-                                }
-                        })
-                end)()
+						channel:send({
+								embed = {
+										author = {
+												icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
+												name = data.spawn.nickname .. " has spawned.",
+												url = "http://steamcommunity.com/profiles/" .. data.spawn.steamid
+										},
+										footer = {
+												text = "Server " .. sts
+										},
+										color = 0x4BB543
+								}
+						})
+				end)()
 	end,
 	shutdown = function(sts,data)
-		handleWS({ status={ players={}, title="Meta Construct "..sts, map="gm_unknown" }, server=sts })
-                wrap(function()
-                        channel:send({
-                                embed = {
-                                        title = "Server "..sts.." shutting down...",
-                                        description = "Resetting status...",
-                                        footer = {
-                                                text = "Server "..sts
-                                        },
-                                        color = 0x0275d8
-                                }
-                        })
-                end)()
+		_G.status[sts] = { players = {}, title = "Meta Construct " .. sts, map = "gm_unknown" }
+				wrap(function()
+						channel:send({
+								embed = {
+										title = "Server " .. sts .. " shutting down...",
+										description = "Resetting status...",
+										footer = {
+												text = "Server " .. sts
+										},
+										color = 0x0275d8
+								}
+						})
+				end)()
 	end,
 	notify = function(sts,data)
 		if not data.notify.text then return end
-                wrap(function()
-                        channel:send({
-                                embed = {
-                                        title = data.notify.title or "",
-                                        description = data.notify.text,
-                                        footer = {
-                                                text = "Server "..sts
-                                        },
-                                        color = data.notify.color or 0xffff00
-                                }
-                        })
-                end)()
+				wrap(function()
+						channel:send({
+								embed = {
+										title = data.notify.title or "",
+										description = data.notify.text,
+										footer = {
+												text = "Server " .. sts
+										},
+										color = data.notify.color or 0xffff00
+								}
+						})
+				end)()
 	end,
 	webhook = function(sts,data)
 		if type(data.webhook) ~= "table" or next(data.webhook) == nil then return end
-                local wh = data.webhook
-                if wh.content or wh.embeds then
-                wh.content = wh.content and cleanContent(wh.content)
-                        wrap(function()
-                                local ok, why = doWebhook(wh)
-                                if not ok then channel:send( EE(why) ) end
-                        end)()
-                else
-                        wrap(function()
-                                channel:send( EE("received invalid embed?") )
-                        end)()
-                end
+				local wh = data.webhook
+				if wh.content or wh.embeds then
+				wh.content = wh.content and cleanContent(wh.content)
+						wrap(function()
+								local ok, why = doWebhook(wh)
+								if not ok then channel:send( EE(why) ) end
+						end)()
+				else
+						wrap(function()
+								channel:send( EE("received invalid embed?") )
+						end)()
+				end
 	end
 }
 
@@ -325,12 +324,12 @@ local serverips = {
 	"94.23.170.2"
 }
 
-require('weblit-websocket')
-local wlit = require('weblit-app')
+require("weblit-websocket")
+local wlit = require("weblit-app")
 	.bind({host = "0.0.0.0", port = 20122})
 
-	.use(require('weblit-logger'))
-  	.use(require('weblit-auto-headers'))
+	.use(require("weblit-logger"))
+	.use(require("weblit-auto-headers"))
 
 	.websocket({
 		path = "/v2/socket"
@@ -371,7 +370,7 @@ c:on ("message", function (from, to, msg)
 	print ("[" .. to .. "] <" .. from .. "> " .. IRC.Formatting.convert(msg))
 
 	if (from ~= "Discord" and to == "#metastruct" and config.enabled == true and not starts(from,"meta")) then
-		wrap(function() HandleIRC(from, to, msg) end)()
+		wrap(function() handleIRC(from, to, msg) end)()
 	end
 
 end)
@@ -425,7 +424,7 @@ c:on ("ijoin", function (channel, whojoined)
 			channel,
 			setby,
 			"+" .. mode.flag,
-			(param and " " .. param or "")
+			param and " " .. param or ""
 		))
 	end)
 	channel:on("-mode", function(mode, setby, param)
@@ -434,7 +433,7 @@ c:on ("ijoin", function (channel, whojoined)
 			channel,
 			setby,
 			"-" .. mode.flag,
-			(param and " " .. param or "")
+			param and " " .. param or ""
 		))
 	end)
 end)
