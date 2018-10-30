@@ -5,7 +5,7 @@ return {
         callback = function(msg, args, line)
             config.enabled = false
 
-            config.irc:say("#metastruct", "brb in idk minutes (going into the maintenance)")
+            instances.irc:say("#metastruct", "brb in idk minutes (going into the maintenance)")
             msg:reply(":white_check_mark:")
         end
     },
@@ -15,7 +15,7 @@ return {
         callback = function(msg, args, line)
             config.enabled = true
 
-            config.irc:say("#metastruct", "back from maintenance")
+            instances.irc:say("#metastruct", "back from maintenance")
             msg:reply(":white_check_mark:")
         end
     }
