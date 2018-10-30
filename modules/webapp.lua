@@ -66,7 +66,7 @@ local evts = {
                         }
                     },
                     footer = {
-                        text = "Server " .. server
+                        text = "Server " .. serverID
                     },
                     color = 0xB54343
                 }
