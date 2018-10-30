@@ -1,50 +1,50 @@
-function string.StripExtension( path )
-	local i = path:match( ".+()%.%w+$" )
-	if ( i ) then return path:sub( 1, i - 1 ) end
+function string.StripExtension(path)
+	local i = path:match(".+()%.%w+$")
+	if i then return path:sub(1, i - 1) end
 	return path
 end
 
-function string.StartWith( String, Start )
-    return string.gsub( String, 1, string.len (Start) ) == Start
+function string.StartWith(str, start)
+    return str:gsub(1, start:len()) == start
 end
 
-function string.Split( str, delimiter )
-	return string.Explode( delimiter, str )
+function string.Split(str, delimiter)
+	return string.Explode(delimiter, str)
 end
 
-function string.ToTable ( str )
+function string.ToTable(str)
 	local tbl = {}
 
-	for i = 1, string.len( str ) do
-		tbl[i] = string.sub( str, i, i )
+	for i = 1, str:len() do
+		tbl[i] = str:sub(i, i)
 	end
 
 	return tbl
 end
 
-local totable = string.ToTable
-local string_sub = string.sub
-local string_find = string.find
-local string_len = string.len
 function string.Explode(separator, str, withpattern)
-	if ( separator == "" ) then return totable( str ) end
-	if ( withpattern == nil ) then withpattern = false end
+	if separator == "" then return str:ToTable() end
 
 	local ret = {}
-	local current_pos = 1
+	local pos = 1
 
-	for i = 1, string_len( str ) do
-		local start_pos, end_pos = string_find( str, separator, current_pos, (not withpattern) )
-		if ( not start_pos ) then break end
-		ret[ i ] = string_sub( str, current_pos, start_pos - 1 )
-		current_pos = end_pos + 1
+	for i = 1, str:len() do
+		local startPos, endPos = str:find(separator, pos, (not withpattern))
+		if not startPos then break end
+
+		ret[i] = str:sub(pos, startPos - 1)
+		pos = endPos + 1
 	end
 
-	ret[ #ret + 1 ] = string_sub( str, current_pos )
+	ret[#ret + 1] = str:sub(pos)
 
 	return ret
 end
 
-function _G.isstring(str)
-	return type(str) == "string"
+-- the above is a fucking unused (?) mess
+
+_G.util = {} -- stuff used throughout multiple files
+
+function util.cleanMassPings(str)
+	return str:gsub("(@+)everyone", "everyone"):gsub("(@+)here", "here")
 end

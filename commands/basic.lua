@@ -1,8 +1,8 @@
+
 return {
 	ping = {
-		forusers = true,
 		description = "Pong!",
-		callback = function(msg,args,line,config)
+		callback = function(msg, args, line)
 			msg:reply({
 				embed = {
 					title = ":ping_pong: Pong!",
@@ -13,50 +13,39 @@ return {
 		end
 	},
 	status = {
-		forusers = true,
 		description = "Status of game server.",
-		callback = function(msg,args,line,config)
-			local servers = {  -- move to config file?
-				[1] = {
-					url = "https://metastruct.net/join/eu1",
-					icon = "http://metastruct.net/static/DefaultServerIcon.png" -- todo make icons for both
-				},
-				[2] = {
-					url = "https://metastruct.net/join/eu2",
-					icon = "http://metastruct.net/static/DefaultServerIcon.png"
-				}
-			}
+		callback = function(msg, args, line)
+			for i, server in next, config.gameservers do
+				local data = instances.webapp.serverStatus["#" .. i]
+				if not data then return end
+				if not data.players then data.players = {} end -- ???
 
-			for i = 1, #servers do
-				local dat = status["#" .. i]
-				if not dat then return end
 				local embed = {
 					color = 0x0275d8,
 					author = {}
 				}
-				if not dat.players then dat.players = {} end -- ???
-				local server = servers[i] or {}
 
 				local plyList
-				if #dat.players == 0 then
+				if #data.players == 0 then
 					plyList = "."
-				elseif #dat.players > 48 then
-					plyList = ": ```\n" .. table.concat({unpack(dat.players, 1, 48)}, ", ") .. " + " .. (#dat.players - 48) .. "more\n```"
+				elseif #data.players > 48 then
+					plyList = ": ```\n" .. table.concat({ unpack(data.players, 1, 48) }, ", ") .. " + " .. (#data.players - 48) .. "more\n```"
 				else
-					plyList = ": ```\n" .. table.concat(dat.players, ", ") .. "\n```"
+					plyList = ": ```\n" .. table.concat(data.players, ", ") .. "\n```"
 				end
 
-				embed.author.name = dat.title or "???"
-				embed.author.url = server.url
+				embed.author.name = data.title or "???"
+				embed.author.url = server.joinURL
 				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
 				embed.description = ([[:map: **Map**: `%s`
-:busts_in_silhouette: **%s players**%s]]):format(dat.map, tostring(#dat.players), plyList)
+:busts_in_silhouette: **%s players**%s]]):format(data.map, tostring(#data.players), plyList)
 
 				msg:reply({
 					embed = embed
 				})
 			end
+
 			return true
 		end
 	}

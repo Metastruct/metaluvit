@@ -3,3 +3,5 @@ discordia.log
 
 files/tmp/*
 !files/tmp/.gitkeep
+
+env.cmd
