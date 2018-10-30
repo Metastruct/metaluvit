@@ -52,7 +52,7 @@ local evts = {
 	end,
 	disconnect = function(serverID, data)
 		coroutine.wrap(function()
-            config.chanel:send({
+            config.channel:send({
                 embed = {
                     author = {
                         icon_url = data.disconnect.avatar or "http://i.imgur.com/ovW4MBM.png",
@@ -75,7 +75,7 @@ local evts = {
 	end,
 	spawn = function(serverID, data)
 		coroutine.wrap(function()
-            config.chanel:send({
+            config.channel:send({
                 embed = {
                     author = {
                         icon_url = data.spawn.avatar or "http://i.imgur.com/ovW4MBM.png",
@@ -93,7 +93,7 @@ local evts = {
 	shutdown = function(serverID, data)
 		_G.status[serverID] = { players = {}, title = "Meta Construct " .. serverID, map = "gm_unknown" }
         coroutine.wrap(function()
-            config.chanel:send({
+            config.channel:send({
                 embed = {
                     title = "Server " .. serverID .. " shutting down...",
                     description = "Resetting status...",
@@ -108,7 +108,7 @@ local evts = {
 	notify = function(serverID, data)
 		if not data.notify.text then return end
         coroutine.wrap(function()
-            config.chanel:send({
+            config.channel:send({
                 embed = {
                     title = data.notify.title or "",
                     description = data.notify.text,
@@ -128,11 +128,11 @@ local evts = {
             wh.content = wh.content and util.cleanMassPings(wh.content)
             coroutine.wrap(function()
                 local ok, why = execWebhook(wh)
-                if not ok then config.chanel:send(errorEmbed(why)) end
+                if not ok then config.channel:send(errorEmbed(why)) end
             end)()
         else
             coroutine.wrap(function()
-                config.chanel:send(errorEmbed("Received invalid embed?") )
+                config.channel:send(errorEmbed("Received invalid embed?") )
             end)()
         end
 	end
