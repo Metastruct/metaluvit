@@ -193,9 +193,9 @@ local app = require("weblit-app")
     .route({ method = "GET", path = "/discord/guild/emojis" }, function(req, res, go)
         local emojis = {}
         for emoji in config.guild.emojis:iter() do
-            emojis[emoji.id] = {
+            emojis[tostring(emoji.id)] = {
                 createdAt = emoji.createdAt,
-                id = emoji.id,
+                id = tostring(emoji.id),
                 timestamp = emoji.timestamp,
                 animated = emoji.animated,
                 mentionString = emoji.mentionString,
@@ -203,6 +203,7 @@ local app = require("weblit-app")
                 url = emoji.url
             }
         end
+
         res.body = json.stringify(emojis)
         res.code = 200
         res.headers["Content-Type"] = "application/json"
