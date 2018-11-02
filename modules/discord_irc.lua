@@ -1,9 +1,22 @@
 local guild, channel = config.guild, config.channel
 
+local function getDiscordNick(id)
+	local member = guild.members:find(function(member)
+		return member.id == id
+	end)
+	return member and member.name or "???"
+end
 
--- IRC
+local function findDiscordUserID(name)
+	local member = guild.members:find(function(member)
+		return member.name == name
+	end)
+	return member and member.id
+end
+
 local irc = require("irc")
 
+-- IRC relaying
 local c = instances.irc
 
 local function handleIRC(from, to, msg)
@@ -40,7 +53,7 @@ c:on("message", function(from, to, msg)
 	end
 end)
 
--- Discord
+-- Discord relaying
 local client = instances.discord
 
 client:on("messageCreate", function(msg)
@@ -83,17 +96,3 @@ client:on("messageCreate", function(msg)
 		end
 	end
 end)
-
-local function getDiscordNick(id)
-	local member = guild.members:find(function(member)
-		return member.id == id
-	end)
-	return member and member.name or "???"
-end
-
-local function findDiscordUserID(name)
-	local member = guild.members:find(function(member)
-		return member.name == name
-	end)
-	return member and member.id
-end
