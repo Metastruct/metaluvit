@@ -1,14 +1,12 @@
-local guild, channel = config.guild, config.channel
-
 local function getDiscordNick(id)
-	local member = guild.members:find(function(member)
+	local member = config.guild.members:find(function(member)
 		return member.id == id
 	end)
 	return member and member.name or "???"
 end
 
 local function findDiscordUserID(name)
-	local member = guild.members:find(function(member)
+	local member = config.guild.members:find(function(member)
 		return member.name == name
 	end)
 	return member and member.id
