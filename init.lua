@@ -7,7 +7,7 @@ description = "Metastruct Luvit Based Daemon"
 tags = { "metastruct", "chat", "luvit" }
 license = "MIT"
 author = { name = "metastruct", email = "metastruct@metastruct.uk.to" }
-homepage = "https://metastruct.net"
+homepage = "https://metastruct.net/"
 ]]
 
 _G.require = require
