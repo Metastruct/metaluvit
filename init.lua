@@ -9,6 +9,7 @@ license = "MIT"
 author = { name = "metastruct", email = "metastruct@metastruct.uk.to" }
 homepage = "https://metastruct.net/"
 ]]
+--
 
 _G.require = require
 setfenv(1, _G)
