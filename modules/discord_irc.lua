@@ -57,7 +57,7 @@ local client = instances.discord
 client:on("messageCreate", function(msg)
 	if msg.channel == config.channel and msg.author ~= client.user and config.enabled and msg.author.discriminator ~= "0000" then
 		if msg.content:match("^%.") and msg.content ~= ".status" and msg.content:len() > 1 then
-			c:say("#metastruct", "Command call requested by " .. msg.author.username .. "#" .. msg.author.discriminator .. ":")
+			c:say("#metastruct", "Command call requested by " .. msg.member.name .. "#" .. msg.author.discriminator .. ":")
 			c:say("#metastruct", msg.content)
 		else
 			local hasAttachment = msg.attachment
@@ -90,7 +90,7 @@ client:on("messageCreate", function(msg)
 				return id
 			end)
 
-			c:say("#metastruct", "[" .. msg.author.username .. "] " .. content .. embeds ..  attachments)
+			c:say("#metastruct", "[" .. msg.member.name .. "] " .. content .. embeds ..  attachments)
 		end
 	end
 end)
