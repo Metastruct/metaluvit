@@ -62,8 +62,10 @@ client:on("messageCreate", function(msg)
 		else
 			local hasAttachment = msg.attachment
 			local attachments = "\n"
+			local skip = false
 			if hasAttachment then
 				if msg.attachments then
+					skip = true
 					for i, attachment in next, msg.attachments do
 						attachments = attachments .. attachment.url .. (i > 1 and  " , " or "")
 					end
@@ -74,8 +76,8 @@ client:on("messageCreate", function(msg)
 
 			local hasEmbeds = msg.embeds
 			local embeds = attachments
-			if hasEmbeds then -- TODO: make sparate function to handle all objects
-				for i, embed in next, msg.embeds do
+			if hasEmbeds and not skip then -- TODO: make sparate function to handle all objects
+				for _, embed in next, msg.embeds do
 					embeds = embeds
                           .. (embed.title and embed.title .. " " or "")
 					      .. (embed.description and embed.description or "" .. "\n")
