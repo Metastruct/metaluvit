@@ -64,8 +64,8 @@ client:on("messageCreate", function(msg)
 			local attachments = "\n"
 			local skip = false
 			if hasAttachment then
+				skip = true
 				if msg.attachments then
-					skip = true
 					for i, attachment in next, msg.attachments do
 						attachments = attachments .. attachment.url .. (i > 1 and  " , " or "")
 					end
