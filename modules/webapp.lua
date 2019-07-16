@@ -29,6 +29,8 @@ local evts = {
 				local msg = data.msg.txt
 				if not msg then return end
 
+				msg = util.cleanMassPings(msg)
+
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
 						local uid = findDiscordUserID(mention)
@@ -37,8 +39,6 @@ local evts = {
 						end
 					end
 				end
-
-				msg = util.cleanMassPings(msg)
 
 				local username = #data.msg.nickname > 26 and (data.msg.nickname:sub(1, 26) .. "...") or data.msg.nickname
 
