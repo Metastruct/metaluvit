@@ -20,7 +20,7 @@ _G.print = function(...)
 end
 
 require("./helpers/util.lua")
-
+--asf
 _G.config = require("config")
 
 if not config.guildID or not config.channelID or not config.groups.devs or not config.groups.admins then
