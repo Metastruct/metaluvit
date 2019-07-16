@@ -46,5 +46,7 @@ end
 _G.util = {} -- stuff used throughout multiple files
 
 function util.cleanMassPings(str)
-	return str:gsub("(@+)everyone", "everyone"):gsub("(@+)here", "here")
+    str = str:lower():gsub("@+everyone", "everyone")
+    str = str:lower():gsub("@+here", "here")
+    return str
 end
