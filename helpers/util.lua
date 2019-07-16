@@ -50,3 +50,8 @@ function util.cleanMassPings(str)
     str = str:gsub("@+([Hh][Ee][Rr][Ee])", "%1")
     return str
 end
+
+local print = print
+_G.print = function(...)
+    print(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
+end

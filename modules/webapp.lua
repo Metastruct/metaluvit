@@ -173,8 +173,8 @@ local app = require("weblit-app")
 		end
 
 		if not here then
-			write()
-			print("Unknown IP")
+			print("Unknown IP: ", req.socket:getsockname().ip)
+			return write()
 		end
 
 		for message in read do
@@ -186,8 +186,8 @@ local app = require("weblit-app")
 			write(message)
 		end
 
-		write()
 		print("Client left")
+		return write()
 	end)
 
     .route({ method = "GET", path = "/discord/guild/emojis" }, function(req, res, go)
