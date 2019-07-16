@@ -14,6 +14,11 @@ homepage = "https://metastruct.net/"
 _G.require = require
 setfenv(1, _G)
 
+local _print = print
+_G.print = function(...)
+    _print(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
+end
+
 require("./helpers/util.lua")
 
 _G.config = require("config")

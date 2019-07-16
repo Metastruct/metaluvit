@@ -51,7 +51,3 @@ function util.cleanMassPings(str)
     return str
 end
 
-local _print = print
-_G.print = function(...)
-    _print(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
-end
