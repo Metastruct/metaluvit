@@ -52,4 +52,4 @@ instances.webapp.start()
 
 loggedprint("Initialized")
 
-require("./modules/repl.lua")
+-- require("./modules/repl.lua")
