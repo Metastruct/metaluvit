@@ -161,8 +161,8 @@ local app = require("weblit-app")
 	.use(require("weblit-auto-headers"))
 
 	.websocket({ path = "/v2/socket" },	function(req, read, write)
-		print("New client")
-		print("Checking IP...")
+		loggedprint("New client")
+		loggedprint("Checking IP...")
 
 		local here = false
 		for _, data in pairs(config.gameservers) do
@@ -173,7 +173,7 @@ local app = require("weblit-app")
 		end
 
 		if not here then
-			print("Unknown IP: ", req.socket:getpeername().ip)
+			loggedprint("Unknown IP: ", req.socket:getpeername().ip)
 			return write()
 		end
 
@@ -181,12 +181,12 @@ local app = require("weblit-app")
 			message.mask = nil
 
             local ok, why = pcall(handleWS, message.payload, write)
-			if not ok then print(why) end
+			if not ok then loggedprint(why) end
 
 			write(message)
 		end
 
-		print("Client left")
+		loggedprint("Client left")
 		return write()
 	end)
 

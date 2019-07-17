@@ -19,7 +19,7 @@ function image.getDiscordImageURL(msg,args)
 
     if(string.StartWith(tostring(args[1]),"http") or msg.content:match('https?://[%w-_%.%?%.:/%+=&]+')) then
         link = args[1] or msg.content:match('https?://[%w-_%.%?%.:/%+=&]+')
-        print("Link found")
+        loggedprint("Link found")
     elseif(msg.attachment or msg.attachments) then
         local url
         if msg.attachments then
@@ -28,19 +28,19 @@ function image.getDiscordImageURL(msg,args)
             url = msg.attachment.url
         end
         link = url
-        print("Attachment found")
+        loggedprint("Attachment found")
     elseif(msg.mentionedUsers and msg.mentionedUsers[1]) then
         local meme = msg.mentionedUsers[1][1]
         local avatar = "https://cdn.discordapp.com/avatars/"..meme.id.."/"..meme.avatar..".webp?size=1024"
         link = avatar
-        print("Mention found")
+        loggedprint("Mention found")
     else
         local channel = msg.channel
         local messages = channel:getMessages(15)[2]
         for k,v in pairs(messages) do
             if v.content:match('https?://[%w-_%.%?%.:/%+=&]+') then
                 link = v.content:match('https?://[%w-_%.%?%.:/%+=&]+')
-                print("Link from other message found")
+                loggedprint("Link from other message found")
             elseif(v.attachment or v.attachments) then
                 local url
                 if v.attachments then
@@ -49,14 +49,14 @@ function image.getDiscordImageURL(msg,args)
                     url = v.attachment.url
                 end
                 link = url
-                print("Attachment from the other message found")
+                loggedprint("Attachment from the other message found")
             end
         end
     end
 
     if(link == nil) then
         link = "https://cdn.discordapp.com/avatars/"..msg.author.id.."/"..msg.author.avatar..".webp?size=1024"
-        print("Nothing got found :( Using author's avatar instead.")
+        loggedprint("Nothing got found :( Using author's avatar instead.")
     end
 
     return link
