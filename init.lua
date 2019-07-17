@@ -15,7 +15,7 @@ _G.require = require
 setfenv(1, _G)
 
 local _print = print
-_G.print = function(...)
+print = function(...)
     _print(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
 end
 
