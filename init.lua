@@ -15,7 +15,7 @@ _G.require = require
 setfenv(1, _G)
 
 _G.loggedprint = function(...)
-    loggedprint(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
+    print(string.format('[%s] ', os.date('%Y-%m-%d %H:%M:%S')), ...)
 end
 
 require("./helpers/util.lua")
