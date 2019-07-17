@@ -166,14 +166,14 @@ local app = require("weblit-app")
 
 		local here = false
 		for _, data in pairs(config.gameservers) do
-			local ip = req.socket:getsockname().ip
+			local ip = req.socket:getpeername()
 			if ip == data.ip or ip == "::1" or ip == "::" or ip == "127.0.0.1" then
 				here = true
 			end
 		end
 
 		if not here then
-			print("Unknown IP: ", req.socket:getsockname().ip)
+			print("Unknown IP: ", req.socket:getpeername())
 			return write()
 		end
 
