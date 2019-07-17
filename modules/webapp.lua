@@ -174,6 +174,9 @@ local app = require("weblit-app")
 
 		if not here then
 			print("Unknown IP: ", req.socket:getpeername())
+            for k,v in next,req.socket:getpeername() do
+                print(k,"=",v)
+            end
 			return write()
 		end
 
