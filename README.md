@@ -9,7 +9,7 @@ Lua ([luvit](https://luvit.io/)) discord bot/relay.
  - **[IRC](https://github.com/radare/luvit-irc)**
    - **Purpose**: Relays messages from discord to IRC (not from ingame, those are in separate irc client inside each game server)
  - **Game server** WebSocket gameserver side [here](https://gitlab.com/metastruct/fast_addons/blob/master/lua/fast_addons/server/discord.lua#L27) (TODO: Move into github?)
-    - **Purpose**: Chat Relay: ingame<->discord
+    - **Purpose**: Chat Relay: ingame<-(websocket)->metaluvit<->discord
  - **Web server**: list discord group emojis
 
 ### 2. Usage
