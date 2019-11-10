@@ -47,7 +47,7 @@ _G.util = {} -- stuff used throughout multiple files
 
 
 function util.cleanMassPings(str)
-    str = str:gsub("%\x20[%\x2E%\x2D%\x2A%\x2B%\x2C]","") -- escape RTL chars that discord removes: https://github.com/Eufranio/MagiBridge/blob/6a946b0b32347b107b57fa947410d772104003ff/src/main/java/com/magitechserver/magibridge/discord/DiscordMessageBuilder.java#L32
+    str = str:gsub("%\xE2%\x80%\xAE","") -- Strip RTL UTF-8 character that discord strips: https://www.fileformat.info/info/unicode/char/202e/index.htm
     str = str:gsub("@+([Ee][Vv][Ee][Rr][Yy][Oo][Nn][Ee])", "%1")
     str = str:gsub("@+([Hh][Ee][Rr][Ee])", "%1")
     return str
