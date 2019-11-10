@@ -45,9 +45,13 @@ end
 
 _G.util = {} -- stuff used throughout multiple files
 
+local cleanme={
+	[]
+}
 function util.cleanMassPings(str)
     str = str:gsub("@+([Ee][Vv][Ee][Rr][Yy][Oo][Nn][Ee])", "%1")
     str = str:gsub("@+([Hh][Ee][Rr][Ee])", "%1")
+    str = str:gsub("(\x20[\x2E\x2D\x2A\x2B\x2C])","")
     return str
 end
 
