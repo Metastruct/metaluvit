@@ -62,7 +62,7 @@ function util.cleanMassPings(str)
 	end
 
 	if not ok then return (str:gsub("[^a-zA-Z0-9]", "")) end
-	str:gsub("@", "\xE2\x80\x8B@\xE2\x80\x8B")
+	str = str:gsub("@", "\xE2\x80\x8B@\xE2\x80\x8B")
 	
 	return str
 end
