@@ -47,23 +47,7 @@ end
 _G.util = _G.util or {} -- stuff used throughout multiple files
 
 function util.cleanMassPings(str)
-	local ok, n1, n2, n3
-
-	-- Strip bad combinations until they no longer exist or until we have iterated too many times
-	for i = 1, 32 do
-		str, n1 = str:gsub("%\xE2%\x80%\xAE", "") -- escape RTL chars that discord removes: https://github.com/Eufranio/MagiBridge/blob/6a946b0b32347b107b57fa947410d772104003ff/src/main/java/com/magitechserver/magibridge/discord/DiscordMessageBuilder.java#L32
-		str, n2 = str:gsub("@+([Ee][Vv][Ee][Rr][Yy][Oo][Nn][Ee])", "%1")
-		str, n3 = str:gsub("@+([Hh][Ee][Rr][Ee])", "%1")
-
-		if n1 + n2 + n3 == 0 then
-			ok = true
-			break
-		end
-	end
-
-	if not ok then return (str:gsub("[^a-zA-Z0-9]", "")) end
-	str = str:gsub("@", "\xE2\x80\x8B@\xE2\x80\x8B")
-	
+	str = str:gsub("@", "@\xE2\x80\x8B") -- Not in the same line as the return to prevent it from returning unneeded extra args
 	return str
 end
 
