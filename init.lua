@@ -37,6 +37,7 @@ _G.instances.webapp = require("./modules/webapp.lua")
 
 require("./modules/discord_commands.lua")
 require("./modules/discord_irc.lua")
+require("./modules/discord_serious.lua")
 
 -- require("./helpers/image.lua") -- now unused??
 
