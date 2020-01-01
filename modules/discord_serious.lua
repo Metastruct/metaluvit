@@ -9,20 +9,11 @@ client:on("messageCreate", function(msg)
 	local content = msg.content
 	local userid = msg.author.id
 
-	local now = os.clock()
-	if last_userid == userid and (now-last_msgtime)<5 then
-		print("Censoring", userid, content)
+	-- Undone: prevent multiline chatting
+	
+	-- TODO: find other ways to deter trolling
+		
+	if false then
 		msg:delete()
-		return
-	end
-
-	last_userid = userid
-	last_msgtime = now
-
-	if content:find"^%:[^%:]+%:$" then
-		print("Censoring", userid, content)
-		msg:delete()
-
-		return
 	end
 end)
