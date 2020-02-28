@@ -1,3 +1,12 @@
+--[=[
+@c Emitter
+@t ui
+@mt mem
+@d Implements an asynchronous event emitter where callbacks can be subscribed to
+specific named events. When events are emitted, the callbacks are called in the
+order that they were originally registered.
+]=]
+
 local timer = require('timer')
 
 local wrap, yield = coroutine.wrap, coroutine.yield
@@ -21,22 +30,65 @@ local function new(self, name, listener)
 	return listener.fn
 end
 
+--[=[
+@m on
+@p name string
+@p fn function
+@r function
+@d Subscribes a callback to be called every time the named event is emitted.
+Callbacks registered with this method will automatically be wrapped as a new
+coroutine when they are called. Returns the original callback for convenience.
+]=]
 function Emitter:on(name, fn)
 	return new(self, name, {fn = fn})
 end
 
+--[=[
+@m once
+@p name string
+@p fn function
+@r function
+@d Subscribes a callback to be called only the first time this event is emitted.
+Callbacks registered with this method will automatically be wrapped as a new
+coroutine when they are called. Returns the original callback for convenience.
+]=]
 function Emitter:once(name, fn)
 	return new(self, name, {fn = fn, once = true})
 end
 
+--[=[
+@m onSync
+@p name string
+@p fn function
+@r function
+@d Subscribes a callback to be called every time the named event is emitted.
+Callbacks registered with this method are not automatically wrapped as a
+coroutine. Returns the original callback for convenience.
+]=]
 function Emitter:onSync(name, fn)
 	return new(self, name, {fn = fn, sync = true})
 end
 
+--[=[
+@m onceSync
+@p name string
+@p fn function
+@r function
+@d Subscribes a callback to be called only the first time this event is emitted.
+Callbacks registered with this method are not automatically wrapped as a coroutine.
+Returns the original callback for convenience.
+]=]
 function Emitter:onceSync(name, fn)
 	return new(self, name, {fn = fn, once = true, sync = true})
 end
 
+--[=[
+@m emit
+@p name string
+@op ... *
+@r nil
+@d Emits the named event and a variable number of arguments to pass to the event callbacks.
+]=]
 function Emitter:emit(name, ...)
 	local listeners = self._listeners[name]
 	if not listeners then return end
@@ -67,18 +119,32 @@ function Emitter:emit(name, ...)
 	end
 end
 
+--[=[
+@m getListeners
+@p name string
+@r function
+@d Returns an iterator for all callbacks registered to the named event.
+]=]
 function Emitter:getListeners(name)
 	local listeners = self._listeners[name]
 	if not listeners then return function() end end
-	return wrap(function()
-		for _, listener in ipairs(listeners) do
-			if listener then
-				yield(listener.fn)
+	local i = 0
+	return function()
+		while i < #listeners do
+			i = i + 1
+			if listeners[i] then
+				return listeners[i].fn
 			end
 		end
-	end)
+	end
 end
 
+--[=[
+@m getListenerCount
+@p name string
+@r number
+@d Returns the number of callbacks registered to the named event.
+]=]
 function Emitter:getListenerCount(name)
 	local listeners = self._listeners[name]
 	if not listeners then return 0 end
@@ -91,6 +157,13 @@ function Emitter:getListenerCount(name)
 	return n
 end
 
+--[=[
+@m removeListener
+@p name string
+@p fn function
+@r nil
+@d Unregisters all instances of the callback from the named event.
+]=]
 function Emitter:removeListener(name, fn)
 	local listeners = self._listeners[name]
 	if not listeners then return end
@@ -102,16 +175,45 @@ function Emitter:removeListener(name, fn)
 	listeners._removed = true
 end
 
+--[=[
+@m removeAllListeners
+@p name string/nil
+@r nil
+@d Unregisters all callbacks for the emitter. If a name is passed, then only
+callbacks for that specific event are unregistered.
+]=]
 function Emitter:removeAllListeners(name)
-	self._listeners[name] = nil
+	if name then
+		self._listeners[name] = nil
+	else
+		for k in pairs(self._listeners) do
+			self._listeners[k] = nil
+		end
+	end
 end
 
-function Emitter:waitFor(name, timeout)
+--[=[
+@m waitFor
+@p name string
+@op timeout number
+@op predicate function
+@r boolean
+@r ...
+@d When called inside of a coroutine, this will yield the coroutine until the
+named event is emitted. If a timeout (in milliseconds) is provided, the function
+will return after the time expires, regardless of whether the event is emitted,
+and `false` will be returned; otherwise, `true` is returned. If a predicate is
+provided, events that do not pass the predicate will be ignored.
+]=]
+function Emitter:waitFor(name, timeout, predicate)
 	local thread = running()
-	local fn = self:onceSync(name, function(...)
+	local fn
+	fn = self:onSync(name, function(...)
+		if predicate and not predicate(...) then return end
 		if timeout then
 			clearTimeout(timeout)
 		end
+		self:removeListener(name, fn)
 		return assert(resume(thread, true, ...))
 	end)
 	timeout = timeout and setTimeout(timeout, function()

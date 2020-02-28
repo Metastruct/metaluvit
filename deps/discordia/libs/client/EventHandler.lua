@@ -2,7 +2,7 @@ local enums = require('enums')
 local json = require('json')
 
 local channelType = enums.channelType
-local concat, insert = table.concat, table.insert
+local insert = table.insert
 local null = json.null
 
 local function warning(client, object, id, event)
@@ -42,7 +42,7 @@ end})
 
 function EventHandler.READY(d, client, shard)
 
-	shard:info('Received READY (%s)', concat(d._trace, ', '))
+	shard:info('Received READY')
 	shard:emit('READY')
 
 	shard._session_id = d.session_id
@@ -97,8 +97,8 @@ function EventHandler.READY(d, client, shard)
 
 end
 
-function EventHandler.RESUMED(d, client, shard)
-	shard:info('Received RESUMED (%s)', concat(d._trace, ', '))
+function EventHandler.RESUMED(_, client, shard)
+	shard:info('Received RESUMED')
 	return client:emit('shardResumed', shard._id)
 end
 
@@ -126,7 +126,7 @@ end
 function EventHandler.CHANNEL_CREATE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text then
+	if t == channelType.text or t == channelType.news then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_CREATE') end
 		channel = guild._text_channels:_insert(d)
@@ -151,7 +151,7 @@ end
 function EventHandler.CHANNEL_UPDATE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text then
+	if t == channelType.text or t == channelType.news then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_UPDATE') end
 		channel = guild._text_channels:_insert(d)
@@ -176,7 +176,7 @@ end
 function EventHandler.CHANNEL_DELETE(d, client)
 	local channel
 	local t = d.type
-	if t == channelType.text then
+	if t == channelType.text or t == channelType.news then
 		local guild = client._guilds:get(d.guild_id)
 		if not guild then return warning(client, 'Guild', d.guild_id, 'CHANNEL_DELETE') end
 		channel = guild._text_channels:_remove(d)
@@ -425,7 +425,7 @@ function EventHandler.PRESENCE_UPDATE(d, client) -- may have incomplete data
 			member = guild._members:get(d.user.id)
 			if not member then return end -- still loading or member left
 		else
-			if d.status == 'offline' and guild._large then
+			if d.status == 'offline' then -- uncache offline members
 				member = guild._members:_delete(d.user.id)
 			else
 				if d.user.username then -- member was offline
@@ -468,40 +468,65 @@ function EventHandler.USER_UPDATE(d, client)
 	return client:emit('userUpdate', client._user)
 end
 
+local function load(obj, d)
+	for k, v in pairs(d) do obj[k] = v end
+end
+
 function EventHandler.VOICE_STATE_UPDATE(d, client)
 	local guild = client._guilds:get(d.guild_id)
 	if not guild then return warning(client, 'Guild', d.guild_id, 'VOICE_STATE_UPDATE') end
-	local member = guild._members:get(d.user_id)
+	local member = d.member and guild._members:_insert(d.member) or guild._members:get(d.user_id)
 	if not member then return warning(client, 'Member', d.user_id, 'VOICE_STATE_UPDATE') end
 	local states = guild._voice_states
 	local channels = guild._voice_channels
+	local new_channel_id = d.channel_id
 	local state = states[d.user_id]
-	if state then
-		if d.channel_id ~= null then
-			states[d.user_id] = d
-			if d.channel_id == state.channel_id then
+	if state then -- user is already connected
+		local old_channel_id = state.channel_id
+		load(state, d)
+		if new_channel_id ~= null then -- state changed, but user has not disconnected
+			if new_channel_id == old_channel_id then -- user did not change channels
 				client:emit('voiceUpdate', member)
-			else
-				local old = channels:get(state.channel_id)
-				local new = channels:get(d.channel_id)
+			else -- user changed channels
+				local old = channels:get(old_channel_id)
+				local new = channels:get(new_channel_id)
+				if d.user_id == client._user._id then -- move connection to new channel
+					local connection = old._connection
+					if connection then
+						new._connection = connection
+						old._connection = nil
+						connection._channel = new
+						connection:_continue(true)
+					end
+				end
 				client:emit('voiceChannelLeave', member, old)
 				client:emit('voiceChannelJoin', member, new)
 			end
-		else
+		else -- user has disconnected
 			states[d.user_id] = nil
-			local old = channels:get(state.channel_id)
+			local old = channels:get(old_channel_id)
 			client:emit('voiceChannelLeave', member, old)
 			client:emit('voiceDisconnect', member)
 		end
-	else
+	else -- user has connected
 		states[d.user_id] = d
-		local new = channels:get(d.channel_id)
+		local new = channels:get(new_channel_id)
 		client:emit('voiceConnect', member)
 		client:emit('voiceChannelJoin', member, new)
 	end
 end
 
-function EventHandler.VOICE_SERVER_UPDATE() -- TODO
+function EventHandler.VOICE_SERVER_UPDATE(d, client)
+	local guild = client._guilds:get(d.guild_id)
+	if not guild then return warning(client, 'Guild', d.guild_id, 'VOICE_SERVER_UPDATE') end
+	local state = guild._voice_states[client._user._id]
+	if not state then return client:warning('Voice state not initialized before VOICE_SERVER_UPDATE') end
+	load(state, d)
+	local channel = guild._voice_channels:get(state.channel_id)
+	if not channel then return warning(client, 'GuildVoiceChannel', state.channel_id, 'VOICE_SERVER_UPDATE') end
+	local connection = channel._connection
+	if not connection then return client:warning('Voice connection not initialized before VOICE_SERVER_UPDATE') end
+	return client._voice:_prepareConnection(state, connection)
 end
 
 function EventHandler.WEBHOOKS_UPDATE(d, client) -- webhook object is not provided

@@ -1,10 +1,12 @@
 local fs = require('fs')
+local ffi = require('ffi')
 local ssl = require('openssl')
 local class = require('class')
 local enums = require('enums')
 
 local permission = enums.permission
 local actionType = enums.actionType
+local messageFlag = enums.messageFlag
 local base64 = ssl.base64
 local readFileSync = fs.readFileSync
 local classes = class.classes
@@ -15,20 +17,17 @@ local format = string.format
 
 local Resolver = {}
 
-local int64_t, uint64_t, istype
-local function loadffi()
-	local ffi = require('ffi')
-	istype = ffi.istype
-	int64_t = ffi.typeof('int64_t')
-	uint64_t = ffi.typeof('uint64_t')
-end
+local istype = ffi.istype
+local int64_t = ffi.typeof('int64_t')
+local uint64_t = ffi.typeof('uint64_t')
 
 local function int(obj)
 	local t = type(obj)
-	if t == 'string' and tonumber(obj) then
-		return obj
+	if t == 'string' then
+		if tonumber(obj) then
+			return obj
+		end
 	elseif t == 'cdata' then
-		if not istype then loadffi() end
 		if istype(int64_t, obj) or istype(uint64_t, obj) then
 			return tostring(obj):match('%d*')
 		end
@@ -80,8 +79,10 @@ function Resolver.emojiId(obj)
 		return obj.id
 	elseif isInstance(obj, classes.Reaction) then
 		return obj.emojiId
+	elseif isInstance(obj, classes.Activity) then
+		return obj.emojiId
 	end
-	return tostring(obj)
+	return int(obj)
 end
 
 function Resolver.guildId(obj)
@@ -131,6 +132,8 @@ function Resolver.emoji(obj)
 		return obj.hash
 	elseif isInstance(obj, classes.Reaction) then
 		return obj.emojiHash
+	elseif isInstance(obj, classes.Activity) then
+		return obj.emojiHash
 	end
 	return tostring(obj)
 end
@@ -167,6 +170,17 @@ function Resolver.actionType(obj)
 		n = actionType[obj]
 	elseif t == 'number' then
 		n = actionType(obj) and obj
+	end
+	return n
+end
+
+function Resolver.messageFlag(obj)
+	local t = type(obj)
+	local n = nil
+	if t == 'string' then
+		n = messageFlag[obj]
+	elseif t == 'number' then
+		n = messageFlag(obj) and obj
 	end
 	return n
 end

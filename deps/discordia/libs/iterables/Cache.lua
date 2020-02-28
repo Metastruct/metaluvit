@@ -1,3 +1,9 @@
+--[=[
+@c Cache x Iterable
+@mt mem
+@d Iterable class that holds references to Discordia Class objects in no particular order.
+]=]
+
 local json = require('json')
 local Iterable = require('iterables/Iterable')
 
@@ -15,6 +21,7 @@ function Cache:__init(array, constructor, parent)
 	self._objects = objects
 	self._constructor = constructor
 	self._parent = parent
+	self._deleted = setmetatable({}, {__mode = 'v'})
 end
 
 function Cache:__pairs()
@@ -33,15 +40,14 @@ end
 
 local function remove(self, k, obj)
 	self._objects[k] = nil
+	self._deleted[k] = obj
 	self._count = self._count - 1
 	return obj
 end
 
 local function hash(data)
-	local meta = getmetatable(data)
-	if not meta or meta.__jsontype ~= 'object' then
-		return nil, 'data must be a json object'
-	end
+	-- local meta = getmetatable(data) -- debug
+	-- assert(meta and meta.__jsontype == 'object') -- debug
 	if data.id then -- snowflakes
 		return data.id
 	elseif data.user then -- members
@@ -57,7 +63,7 @@ end
 
 function Cache:_insert(data)
 	local k = assert(hash(data))
-	local old = self._objects[k]
+	local old = self._objects[k] or self._deleted[k]
 	if old then
 		old:_load(data)
 		return old
@@ -69,7 +75,7 @@ end
 
 function Cache:_remove(data)
 	local k = assert(hash(data))
-	local old = self._objects[k]
+	local old = self._objects[k] or self._deleted[k]
 	if old then
 		old:_load(data)
 		return remove(self, k, old)
@@ -79,7 +85,7 @@ function Cache:_remove(data)
 end
 
 function Cache:_delete(k)
-	local old = self._objects[k]
+	local old = self._objects[k] or self._deleted[k]
 	if old then
 		return remove(self, k, old)
 	else
@@ -107,10 +113,24 @@ function Cache:_load(array, update)
 	end
 end
 
+--[=[
+@m get
+@p k *
+@r *
+@d Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Unlike Iterable:get, this
+method operates with O(1) complexity.
+]=]
 function Cache:get(k)
 	return self._objects[k]
 end
 
+--[=[
+@m iter
+@r function
+@d Returns an iterator that returns all contained objects. The order of the objects
+is not guaranteed.
+]=]
 function Cache:iter()
 	local objects, k, obj = self._objects
 	return function()

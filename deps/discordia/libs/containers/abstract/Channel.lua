@@ -1,3 +1,9 @@
+--[=[
+@c Channel x Snowflake
+@t abc
+@d Defines the base methods and properties for all Discord channel types.
+]=]
+
 local Snowflake = require('containers/abstract/Snowflake')
 local enums = require('enums')
 
@@ -25,7 +31,7 @@ function Channel:_delete()
 	if data then
 		local cache
 		local t = self._type
-		if t == channelType.text then
+		if t == channelType.text or t == channelType.news then
 			cache = self._parent._text_channels
 		elseif t == channelType.private then
 			cache = self._parent._private_channels
@@ -45,10 +51,14 @@ function Channel:_delete()
 	end
 end
 
+--[=[@p type number The channel type. See the `channelType` enumeration for a
+human-readable representation.]=]
 function get.type(self)
 	return self._type
 end
 
+--[=[@p mentionString string A string that, when included in a message content,
+may resolve as a link to a channel in the official Discord client.]=]
 function get.mentionString(self)
 	return format('<#%s>', self._id)
 end

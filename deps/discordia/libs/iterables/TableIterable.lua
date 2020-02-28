@@ -1,4 +1,9 @@
-local wrap, yield = coroutine.wrap, coroutine.yield
+--[=[
+@c TableIterable x Iterable
+@mt mem
+@d Iterable class that wraps a basic Lua table, where order is not guaranteed.
+Some versions may use a map function to shape the objects before they are accessed.
+]=]
 
 local Iterable = require('iterables/Iterable')
 
@@ -9,6 +14,11 @@ function TableIterable:__init(tbl, map)
 	self._map = map
 end
 
+--[=[
+@m iter
+@r function
+@d Returns an iterator that returns all contained objects. The order of the objects is not guaranteed.
+]=]
 function TableIterable:iter()
 	local tbl = self._tbl
 	if not tbl then
@@ -18,14 +28,19 @@ function TableIterable:iter()
 	end
 	local map = self._map
 	if map then
-		return wrap(function()
-			for _, v in pairs(tbl) do
-				local obj = map(v)
-				if obj then
-					yield(obj)
+		local k, v
+		return function()
+			while true do
+				k, v = next(tbl, k)
+				if not v then
+					return nil
+				end
+				v = map(v)
+				if v then
+					return v
 				end
 			end
-		end)
+		end
 	else
 		local k, v
 		return function()

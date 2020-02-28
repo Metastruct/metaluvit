@@ -1,18 +1,42 @@
+--[=[
+@c Iterable
+@mt mem
+@d Abstract base class that defines the base methods and properties for a
+general purpose data structure with features that are better suited for an
+object-oriented environment.
+
+Note: All sub-classes should implement their own `__init` and `iter` methods and
+all stored objects should have a `__hash` method.
+]=]
+
 local random = math.random
-local wrap, yield = coroutine.wrap, coroutine.yield
 local insert, sort, pack = table.insert, table.sort, table.pack
 
 local Iterable = require('class')('Iterable')
 
-
+--[=[
+@m __pairs
+@r function
+@d Defines the behavior of the `pairs` function. Returns an iterator that returns
+a `key, value` pair, where `key` is the result of calling `__hash` on the `value`.
+]=]
 function Iterable:__pairs()
-	return wrap(function()
-		for obj in self:iter() do
-			yield(obj:__hash(), obj)
+	local gen = self:iter()
+	return function()
+		local obj = gen()
+		if not obj then
+			return nil
 		end
-	end)
+		return obj:__hash(), obj
+	end
 end
 
+--[=[
+@m __len
+@r function
+@d Defines the behavior of the `#` operator. Returns the total number of objects
+stored in the iterable.
+]=]
 function Iterable:__len()
 	local n = 0
 	for _ in self:iter() do
@@ -21,6 +45,13 @@ function Iterable:__len()
 	return n
 end
 
+--[=[
+@m get
+@p k *
+@r *
+@d Returns an individual object by key, where the key should match the result of
+calling `__hash` on the contained objects. Operates with up to O(n) complexity.
+]=]
 function Iterable:get(k) -- objects must be hashable
 	for obj in self:iter() do
 		if obj:__hash() == k then
@@ -30,6 +61,12 @@ function Iterable:get(k) -- objects must be hashable
 	return nil
 end
 
+--[=[
+@m find
+@p fn function
+@r *
+@d Returns the first object that satisfies a predicate.
+]=]
 function Iterable:find(fn)
 	for obj in self:iter() do
 		if fn(obj) then
@@ -39,22 +76,45 @@ function Iterable:find(fn)
 	return nil
 end
 
+--[=[
+@m findAll
+@p fn function
+@r function
+@d Returns an iterator that returns all objects that satisfy a predicate.
+]=]
 function Iterable:findAll(fn)
-	return wrap(function()
-		for obj in self:iter() do
+	local gen = self:iter()
+	return function()
+		while true do
+			local obj = gen()
+			if not obj then
+				return nil
+			end
 			if fn(obj) then
-				yield(obj)
+				return obj
 			end
 		end
-	end)
+	end
 end
 
+--[=[
+@m forEach
+@p fn function
+@r nil
+@d Iterates through all objects and calls a function `fn` that takes the
+objects as an argument.
+]=]
 function Iterable:forEach(fn)
 	for obj in self:iter() do
 		fn(obj)
 	end
 end
 
+--[=[
+@m random
+@r *
+@d Returns a random object that is contained in the iterable.
+]=]
 function Iterable:random()
 	local n = 1
 	local rand = random(#self)
@@ -66,7 +126,17 @@ function Iterable:random()
 	end
 end
 
+--[=[
+@m count
+@op fn function
+@r number
+@d If a predicate is provided, this returns the number of objects in the iterable
+that satistfy the predicate; otherwise, the total number of objects.
+]=]
 function Iterable:count(fn)
+	if not fn then
+		return self:__len()
+	end
 	local n = 0
 	for _ in self:findAll(fn) do
 		n = n + 1
@@ -114,6 +184,16 @@ local function sorter(a, b)
 	return tostring(a) < tostring(b)
 end
 
+--[=[
+@m toArray
+@op sortBy string
+@op fn function
+@r table
+@d Returns a sequentially-indexed table that contains references to all objects.
+If a `sortBy` string is provided, then the table is sorted by that particular
+property. If a predicate is provided, then only objects that satisfy it will
+be included.
+]=]
 function Iterable:toArray(sortBy, fn)
 	local t1 = type(sortBy)
 	if t1 == 'string' then
@@ -136,6 +216,14 @@ function Iterable:toArray(sortBy, fn)
 	return ret
 end
 
+--[=[
+@m select
+@p ... string
+@r table
+@d Similarly to an SQL query, this returns a sorted Lua table of rows where each
+row corresponds to each object in the iterable, and each value in the row is
+selected from the objects according to the keys provided.
+]=]
 function Iterable:select(...)
 	local rows = {}
 	local keys = pack(...)
@@ -154,6 +242,37 @@ function Iterable:select(...)
 		end
 	end)
 	return rows
+end
+
+--[=[
+@m pick
+@p ... string/function
+@r function
+@d This returns an iterator that, when called, returns the values from each
+encountered object, picked by the provided keys. If a key is a string, the objects
+are indexed with the string. If a key is a function, the function is called with
+the object passed as its first argument.
+]=]
+function Iterable:pick(...)
+	local keys = pack(...)
+	local values = {}
+	local n = keys.n
+	local gen = self:iter()
+	return function()
+		local obj = gen()
+		if not obj then
+			return nil
+		end
+		for i = 1, n do
+			local k = keys[i]
+			if type(k) == 'function' then
+				values[i] = k(obj)
+			else
+				values[i] = obj[k]
+			end
+		end
+		return unpack(values, 1, n)
+	end
 end
 
 return Iterable

@@ -1,3 +1,9 @@
+--[=[
+@c GuildChannel x Channel
+@t abc
+@d Defines the base methods and properties for all Discord guild channels.
+]=]
+
 local json = require('json')
 local enums = require('enums')
 local class = require('class')
@@ -33,10 +39,24 @@ function GuildChannel:_loadMore(data)
 	return self._permission_overwrites:_load(data.permission_overwrites, true)
 end
 
+--[=[
+@m setName
+@t http
+@p name string
+@r boolean
+@d Sets the channel's name. This must be between 2 and 100 characters in length.
+]=]
 function GuildChannel:setName(name)
 	return self:_modify({name = name or json.null})
 end
 
+--[=[
+@m setCategory
+@t http
+@p id Channel-ID-Resolvable
+@r boolean
+@d Sets the channel's parent category.
+]=]
 function GuildChannel:setCategory(id)
 	id = Resolver.channelId(id)
 	return self:_modify({parent_id = id or json.null})
@@ -54,7 +74,7 @@ local function getSortedChannels(self)
 
 	local channels
 	local t = self._type
-	if t == channelType.text then
+	if t == channelType.text or t == channelType.news then
 		channels = self._parent._text_channels
 	elseif t == channelType.voice then
 		channels = self._parent._voice_channels
@@ -81,6 +101,15 @@ local function setSortedChannels(self, channels)
 	end
 end
 
+--[=[
+@m moveUp
+@t http
+@p n number
+@r boolean
+@d Moves a channel up its list. The parameter `n` indicates how many spaces the
+channel should be moved, clamped to the highest position, with a default of 1 if
+it is omitted. This will also normalize the positions of all channels.
+]=]
 function GuildChannel:moveUp(n)
 
 	n = tonumber(n) or 1
@@ -107,6 +136,15 @@ function GuildChannel:moveUp(n)
 
 end
 
+--[=[
+@m moveDown
+@t http
+@p n number
+@r boolean
+@d Moves a channel down its list. The parameter `n` indicates how many spaces the
+channel should be moved, clamped to the lowest position, with a default of 1 if
+it is omitted. This will also normalize the positions of all channels.
+]=]
 function GuildChannel:moveDown(n)
 
 	n = tonumber(n) or 1
@@ -133,6 +171,17 @@ function GuildChannel:moveDown(n)
 
 end
 
+--[=[
+@m createInvite
+@t http
+@op payload table
+@r Invite
+@d Creates an invite to the channel. Optional payload fields are: max_age: number
+time in seconds until expiration, default = 86400 (24 hours), max_uses: number
+total number of uses allowed, default = 0 (unlimited), temporary: boolean whether
+the invite grants temporary membership, default = false, unique: boolean whether
+a unique code should be guaranteed, default = false
+]=]
 function GuildChannel:createInvite(payload)
 	local data, err = self.client._api:createChannelInvite(self._id, payload)
 	if data then
@@ -142,6 +191,14 @@ function GuildChannel:createInvite(payload)
 	end
 end
 
+--[=[
+@m getInvites
+@t http
+@r Cache
+@d Returns a newly constructed cache of all invite objects for the channel. The
+cache and its objects are not automatically updated via gateway events. You must
+call this method again to get the updated objects.
+]=]
 function GuildChannel:getInvites()
 	local data, err = self.client._api:getChannelInvites(self._id)
 	if data then
@@ -151,6 +208,17 @@ function GuildChannel:getInvites()
 	end
 end
 
+--[=[
+@m getPermissionOverwriteFor
+@t mem
+@p obj Role/Member
+@r PermissionOverwrite
+@d Returns a permission overwrite object corresponding to the provided member or
+role object. If a cached overwrite is not found, an empty overwrite with
+zero-permissions is returned instead. Therefore, this can be used to create a
+new overwrite when one does not exist. Note that the member or role must exist
+in the same guild as the channel does.
+]=]
 function GuildChannel:getPermissionOverwriteFor(obj)
 	local id, type
 	if isInstance(obj, classes.Role) and self._parent == obj._parent then
@@ -166,28 +234,48 @@ function GuildChannel:getPermissionOverwriteFor(obj)
 	}, {__jsontype = 'object'}))
 end
 
+--[=[
+@m delete
+@t http
+@r boolean
+@d Permanently deletes the channel. This cannot be undone!
+]=]
 function GuildChannel:delete()
 	return self:_delete()
 end
 
+--[=[@p permissionOverwrites Cache An iterable cache of all overwrites that exist in this channel. To access an
+overwrite that may exist, but is not cached, use `GuildChannel:getPermissionOverwriteFor`.]=]
 function get.permissionOverwrites(self)
 	return self._permission_overwrites
 end
 
+--[=[@p name string The name of the channel. This should be between 2 and 100 characters in length.]=]
 function get.name(self)
 	return self._name
 end
 
+--[=[@p position number The position of the channel, where 0 is the highest.]=]
 function get.position(self)
 	return self._position
 end
 
+--[=[@p guild Guild The guild in which this channel exists.]=]
 function get.guild(self)
 	return self._parent
 end
 
+--[=[@p category GuildCategoryChannel/nil The parent channel category that may contain this channel.]=]
 function get.category(self)
 	return self._parent._categories:get(self._parent_id)
+end
+
+--[=[@p private boolean Whether the "everyone" role has permission to view this
+channel. In the Discord channel, private text channels are indicated with a lock
+icon and private voice channels are not visible.]=]
+function get.private(self)
+	local overwrite = self._permission_overwrites:get(self._parent._id)
+	return overwrite and overwrite:getDeniedPermissions():has('readMessages')
 end
 
 return GuildChannel

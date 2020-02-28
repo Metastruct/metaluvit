@@ -62,6 +62,24 @@ local function profile()
 	return ret
 end
 
+local types = {['string'] = true, ['number'] = true, ['boolean'] = true}
+
+local function _getPrimitive(v)
+	return types[type(v)] and v or v ~= nil and tostring(v) or nil
+end
+
+local function serialize(obj)
+	if isObject(obj) then
+		local ret = {}
+		for k, v in pairs(obj.__getters) do
+			ret[k] = _getPrimitive(v(obj))
+		end
+		return ret
+	else
+		return _getPrimitive(obj)
+	end
+end
+
 local rawtype = type
 local function type(obj)
 	return isObject(obj) and obj.__name or rawtype(obj)
@@ -76,6 +94,7 @@ return setmetatable({
 	isInstance = isInstance,
 	type = type,
 	profile = profile,
+	serialize = serialize,
 
 }, {__call = function(_, name, ...)
 
