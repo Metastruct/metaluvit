@@ -18,6 +18,16 @@ return {
         [2] = {
             joinURL = "https://metastruct.net/join/eu2",
             icon = "http://metastruct.net/static/DefaultServerIcon.png",
+            ip = "94.23.200.74"
+        },
+        [3] = {
+            joinURL = "https://metastruct.net/join/eu3",
+            icon = "http://metastruct.net/static/DefaultServerIcon.png",
+            ip = "g3.metastruct.net"
+        },
+        [8] = {
+            joinURL = "https://metastruct.net/join/r8",
+            icon = "http://metastruct.net/static/DefaultServerIcon.png",
             ip = "94.23.170.2"
         }
     }
