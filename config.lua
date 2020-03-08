@@ -21,9 +21,9 @@ return {
             ip = "94.23.200.74"
         },
         [3] = {
-            joinURL = "https://metastruct.net/join/eu3",
+            joinURL = "https://metastruct.net/join/us1",
             icon = "http://metastruct.net/static/DefaultServerIcon.png",
-            ip = "g3.metastruct.net"
+            ip = "66.42.103.116"
         },
         [8] = {
             joinURL = "https://metastruct.net/join/r8",
