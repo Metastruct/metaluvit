@@ -45,7 +45,7 @@ return {
 						embed = embed
 					})
 				else
-					print("#" .. id .. " has no data??")
+					print("#" .. i .. " has no data??")
 				end
 			end
 
