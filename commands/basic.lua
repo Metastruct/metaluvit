@@ -18,7 +18,6 @@ return {
 			for i, server in next, config.gameservers do
 				local data = instances.webapp.serverStatus["#" .. i]
 				if data then
-					print("#" .. i, table.concat({ unpack(data) }, ", "))
 					if not data.players then data.players = {} end -- ???
 
 					local embed = {
@@ -45,6 +44,8 @@ return {
 					msg:reply({
 						embed = embed
 					})
+				else
+					print("#" .. id .. " has no data??")
 				end
 			end
 
