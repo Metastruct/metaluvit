@@ -17,33 +17,35 @@ return {
 		callback = function(msg, args, line)
 			for i, server in next, config.gameservers do
 				local data = instances.webapp.serverStatus["#" .. i]
-				if not data then return end
-				if not data.players then data.players = {} end -- ???
+				if data then
+					print("#" .. i, table.concat({ unpack(data) }, ", "))
+					if not data.players then data.players = {} end -- ???
 
-				local embed = {
-					color = 0x0275d8,
-					author = {}
-				}
+					local embed = {
+						color = 0x0275d8,
+						author = {}
+					}
 
-				local plyList
-				if #data.players == 0 then
-					plyList = "."
-				elseif #data.players > 48 then
-					plyList = ": ```\n" .. table.concat({ unpack(data.players, 1, 48) }, ", ") .. " + " .. (#data.players - 48) .. "more\n```"
-				else
-					plyList = ": ```\n" .. table.concat(data.players, ", ") .. "\n```"
+					local plyList
+					if #data.players == 0 then
+						plyList = "."
+					elseif #data.players > 48 then
+						plyList = ": ```\n" .. table.concat({ unpack(data.players, 1, 48) }, ", ") .. " + " .. (#data.players - 48) .. "more\n```"
+					else
+						plyList = ": ```\n" .. table.concat(data.players, ", ") .. "\n```"
+					end
+
+					embed.author.name = data.title or "???"
+					embed.author.url = server.joinURL
+					embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
+
+					embed.description = ([[:map: **Map**: `%s`
+	:busts_in_silhouette: **%s players**%s]]):format(data.map, tostring(#data.players), plyList)
+
+					msg:reply({
+						embed = embed
+					})
 				end
-
-				embed.author.name = data.title or "???"
-				embed.author.url = server.joinURL
-				embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
-
-				embed.description = ([[:map: **Map**: `%s`
-:busts_in_silhouette: **%s players**%s]]):format(data.map, tostring(#data.players), plyList)
-
-				msg:reply({
-					embed = embed
-				})
 			end
 
 			return true
