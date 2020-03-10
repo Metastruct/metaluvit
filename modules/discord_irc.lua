@@ -33,13 +33,12 @@ local function handleIRC(from, to, msg)
 	end
 
 	-- Discord Markdown escape
-	safemessage = util.cleanMassPings(safemessage)
 	safemessage = safemessage:gsub("`", "\\`")
 	--safemessage = safemessage:gsub("_", "\\_") -- breaks urls
 	safemessage = safemessage:gsub("*", "\\*")
 
 	pcall(function()
-		config.channel:send(id .. safemessage)
+		config.channel:send({ content = id .. safemessage, allowed_mentions = { parse = { "users" } } })
 	end)
 end
 

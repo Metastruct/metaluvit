@@ -47,7 +47,7 @@ local evts = {
 					avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
 					content = msg,
 					allowed_mentions = {
-						parse = "users"
+						parse = { "users" }
 					}
 				})
 			end)()
@@ -134,7 +134,9 @@ local evts = {
 		local wh = data.webhook
 
 		if wh.content or wh.embeds then
-			wh.content = wh.content and util.cleanMassPings(wh.content)
+			wh.allowed_mentions = {
+				parse = { "users" }
+			}
 
 			coroutine.wrap(function()
 				local ok, why = execWebhook(wh)
