@@ -41,4 +41,21 @@ function string.Explode(separator, str, withpattern)
 	return ret
 end
 
+_G.util = _G.util or {}
+
+function util.getDiscordNick(id)
+	local member = config.guild.members:find(function(member)
+		return member.id == id
+	end)
+	return member and member.name or "???"
+end
+
+function util.findDiscordUserID(name)
+	local member = config.guild.members:find(function(member)
+		return member.name == name
+	end)
+	return member and member.id
+end
+
+
 -- the above is a fucking unused (?) mess

@@ -32,7 +32,7 @@ local evts = {
 
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
-						local uid = findDiscordUserID(mention)
+						local uid = util.findDiscordUserID(mention)
 
 						if uid then
 							msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")

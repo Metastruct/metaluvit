@@ -1,17 +1,3 @@
-local function getDiscordNick(id)
-	local member = config.guild.members:find(function(member)
-		return member.id == id
-	end)
-	return member and member.name or "???"
-end
-
-local function findDiscordUserID(name)
-	local member = config.guild.members:find(function(member)
-		return member.name == name
-	end)
-	return member and member.id
-end
-
 local irc = require("irc")
 
 -- IRC relaying
@@ -21,7 +7,7 @@ local function handleIRC(from, to, msg)
 	local id = "**<" .. from .. ">** "
 	if msg:match("@%w+") then
 		for mention in msg:gmatch("@(%w+)") do
-			local uid = findDiscordUserID(mention)
+			local uid = util.findDiscordUserID(mention)
 			if uid then
 				msg = msg:gsub("@" .. mention, "<@" .. uid .. ">")
 			end
@@ -83,7 +69,7 @@ client:on("messageCreate", function(msg)
 
 			local content = msg.content
 			content = content:gsub("<@!?(%d-)>", function(id) -- get nickname from id
-				return "@" .. getDiscordNick(id)
+				return "@" .. util.getDiscordNick(id)
 			end)
 			content = content:gsub("<a?(:.-:)%d->", function(id) -- format emotes
 				return id
