@@ -29,7 +29,6 @@ local evts = {
 			coroutine.wrap(function()
 				local msg = data.msg.txt
 				if not msg then return end
-				msg = util.cleanMassPings(msg)
 
 				if msg:match("@%w+") then
 					for mention in msg:gmatch("@(%w+)") do
@@ -46,7 +45,10 @@ local evts = {
 				execWebhook({
 					username = serverID .. " " .. username,
 					avatar_url = data.msg.avatar or "http://i.imgur.com/ovW4MBM.png",
-					content = msg
+					content = msg,
+					allowed_mentions = {
+						parse = "users"
+					}
 				})
 			end)()
 		end

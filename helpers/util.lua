@@ -42,19 +42,3 @@ function string.Explode(separator, str, withpattern)
 end
 
 -- the above is a fucking unused (?) mess
-
-
-_G.util = _G.util or {} -- stuff used throughout multiple files
-
-function util.cleanMassPings(str)
-	str = str:gsub("@", "@\xE2\x80\x8B") -- Not in the same line as the return to prevent it from returning unneeded extra args
-	return str
-end
-
--- tests used
-
---local a="@‮everyone U+202E RIGHT-TO-LEFT OVERRIDE"
---local b="@\xE2\xE2\x80\xAE\x80\xAEeveryone"
---
---asd1=util.cleanMassPings(a)
---asd2=util.cleanMassPings(b)
