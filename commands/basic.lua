@@ -34,7 +34,7 @@ return {
 						plyList = ": ```\n" .. table.concat(data.players, ", ") .. "\n```"
 					end
 
-					embed.author.name = data.title or "???"
+					embed.author.name = data.title and ("%s (#%s)"):format(data.title, i) or "???"
 					embed.author.url = server.joinURL
 					embed.author.icon_url = server.icon or "http://metastruct.net/static/DefaultServerIcon.png"
 
