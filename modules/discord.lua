@@ -1,19 +1,38 @@
 local discordia = require("discordia")
+local config = require("config")
+local slash = require("discordia-slash")
+local log = require("modules/logsys")
+local hook = require("modules/hook")
+
+local _M
 
 local client = discordia.Client({
 	cacheAllMembers = true,
 })
+client:useSlashCommands()
+_M.client=client
+
+client:on("slashCommandsReady", function()
+	hook.run("slashCommandsReady",slash,client)
+end)
 
 client:on("ready", function()
-	config.guild = client:getGuild(config.guildID)
-	if not config.guild then
-		loggedprint("Error, guild not found. Did you add the bot to your server..?")
+	_M.guild = client:getGuild(config.guildID)
+	if not _M.guild then
+		log:error("Error, guild not found. Did you add the bot to your server..?")
 		process:exit(1)
 	end
 
-	config.channel = config.guild:getChannel(config.channelID)
+	_M.channel = _M.guild:getChannel(config.channelID)
 
-    loggedprint("Logged in as " .. client.user.username)
+    log:info("Discord","Logged in as " .. client.user.username)
 end)
 
-return client
+
+local webhook = string.Split(config.webhook, "/")
+
+function _M.execWebhook(tbl)
+	return client and client._api:executeWebhook(webhook[1], webhook[2], tbl)
+end
+
+return _M

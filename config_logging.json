@@ -1,0 +1,20 @@
+[
+  {
+    "name": "metaluvit",
+    "level": "trace",
+    "loggers": [
+      {
+        "type": "console",
+        "color": true,
+        "func_info": true
+      },
+	  {
+        "type": "file",
+        "path": "../metaluvit.log",
+        "level": "error",
+        "dateformat": "%Y-%m-%dT%H:%M:%SZ%z",
+        "sync": false
+      },
+    ]
+  }
+]

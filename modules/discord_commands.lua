@@ -1,19 +1,10 @@
---[[
-    Commands engine.
-    Engine that handles the commands and loads them.
+local fs = require		"fs"
+local config = require	'config'
+local discord = require	'modules/discord'
 
-    (for Discordia client)
-]]
+local _M = { list = {} }
 
-local fs = require("fs")
-
-local config = _G.config -- clarify
-
-local client = instances.discord
-
-local commands = { list = {} }
-
-function commands:add(category, name, description, callback, owner, nsfw)
+function _M:add(category, name, description, callback, owner, nsfw)
     if self.list[category] == nil then
         self.list[category] = {}
     end
@@ -28,7 +19,7 @@ function commands:add(category, name, description, callback, owner, nsfw)
     return self.list[category][name]
 end
 
-function commands:remove(category, command)
+function _M:remove(category, command)
     if self.list[category] == nil or self.list[category][command] == nil then
         return false, "category or command doesn't exist"
     end
@@ -37,13 +28,13 @@ function commands:remove(category, command)
     return true
 end
 
-for k, v in pairs(fs.readdirSync("commands")) do
+for k, v in pairs(fs.readdirSync("_M")) do
     local name = string.StripExtension(v)
-    commands.list[name] = require("../commands/" .. v)
+    _M.list[name] = require("../_M/" .. v)
 end
 
-client:on("messageCreate", function(msg)
-    for catName, cat in pairs(commands.list) do
+discord:on("messageCreate", function(msg)
+    for catName, cat in pairs(_M.list) do
         for cmdName, cmd in pairs(cat) do
             local args = string.Split(msg.content, " ")
             local prefix = msg.content:match("^" .. config.prefix)
@@ -58,7 +49,7 @@ client:on("messageCreate", function(msg)
                 local line = table.concat(args, " ")
 
                 if not msg.member then
-                    return msg:reply("Sorry, commands can only be used in the Meta Construct Discord server.")
+                    return msg:reply("Sorry, _M can only be used in the Meta Construct Discord server.")
                 end
 
                 if cmd.admin then
@@ -77,4 +68,5 @@ client:on("messageCreate", function(msg)
     end
 end)
 
-_G.commands = commands
+_G.discord_commands = _M
+return _M

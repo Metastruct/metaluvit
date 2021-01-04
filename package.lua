@@ -10,7 +10,10 @@ return {
         "luvit/require",
         "luvit/pretty-print",
         "SinisterRectus/discordia",
-        "squeek502/irc@0.3.4",
-        "creationix/weblit@3.1.0"
+        "squeek502/irc",
+        "creationix/weblit",
+		"gsick/logger",
+		"GitSparTV/discordia-slash",
+		"SinisterRectus/sqlite3"
     }
 }

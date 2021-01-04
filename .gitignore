@@ -5,3 +5,6 @@ files/tmp/*
 !files/tmp/.gitkeep
 
 env.cmd
+/luvi.exe
+/luvit.exe
+/lit.exe
