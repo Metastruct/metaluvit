@@ -18,7 +18,7 @@ limitations under the License.
 
 --[[lit-meta
   name = "luvit/http"
-  version = "2.1.2"
+  version = "2.1.4"
   dependencies = {
     "luvit/net@2.0.0",
     "luvit/url@2.0.0",
@@ -187,8 +187,9 @@ function ServerResponse:finish(chunk)
   last = last .. (self.encode("") or "")
   local function maybeClose()
     self:emit('finish')
-    self.socket:_end()
-    collectgarbage()
+    if not self.keepAlive then
+      self.socket:_end()
+    end
   end
   if #last > 0 then
     self.socket:write(last, function()

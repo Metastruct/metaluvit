@@ -282,7 +282,6 @@ function TextChannel:send(content)
 			tts = tbl.tts,
 			nonce = tbl.nonce,
 			embed = tbl.embed,
-			allowed_mentions = tbl.allowed_mentions -- hax
 		}, files)
 
 	else

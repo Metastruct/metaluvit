@@ -17,7 +17,7 @@ limitations under the License.
 --]]
 --[[lit-meta
   name = "luvit/childprocess"
-  version = "2.1.1"
+  version = "2.1.2"
   dependencies = {
     "luvit/core@2.0.0",
     "luvit/utils@2.0.0",
@@ -126,6 +126,7 @@ local function spawn(command, args, options)
     em.exitCode = code
     em.signal = signal
     em:emit('exit', code, signal)
+    if stdin then stdin:destroy(maybeClose) end
     maybeClose()
     em:close()
   end
@@ -137,7 +138,8 @@ local function spawn(command, args, options)
     env = envPairs,
     detached = options.detached,
     uid = options.uid,
-    gid = options.gid
+    gid = options.gid,
+    verbatim = options.verbatim,
   }, onExit)
 
   em = Process:new(stdin, stdout, stderr)
@@ -152,6 +154,7 @@ local function spawn(command, args, options)
       if em.stdout then em.stdout:emit('error', Error:new(pid)) end
       if em.stderr then em.stderr:emit('error', Error:new(pid)) end
       if em.stdin then em.stdin:emit('error', Error:new(pid)) end
+      if em.stdin then em.stdin:destroy() end
       maybeClose()
     end)
   end
@@ -180,6 +183,8 @@ local function normalizeExecArgs(command, options, callback)
   if isWindows then
     file = 'cmd.exe'
     args = {'/s', '/c', '"'..command..'"'}
+    -- verbatim is necessary to avoid quotation marks getting escaped by Libuv
+    options.verbatim = true
   else
     file = '/bin/sh'
     args = {'-c', command}

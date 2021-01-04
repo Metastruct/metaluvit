@@ -1,6 +1,6 @@
 --[[lit-meta
   name = "creationix/coro-fs"
-  version = "2.2.1"
+  version = "2.2.3"
   homepage = "https://github.com/luvit/lit/blob/master/deps/coro-fs.lua"
   description = "A coro style interface to the filesystem."
   tags = {"coro", "fs"}
@@ -9,6 +9,7 @@
     "creationix/pathjoin@2.0.0"
   }
   author = { name = "Tim Caswell" }
+  contributors = {"Tim Caswell", "Alex Iverson"}
 ]]
 
 local uv = require('uv')
@@ -130,7 +131,25 @@ function fs.readFile(path)
   if err then return nil, err end
   stat, err = fs.fstat(fd)
   if stat then
-    data, err = fs.read(fd, stat.size)
+    --special case files on virtual filesystem
+    if stat.size == 0 and stat.birthtime.sec == 0 and stat.birthtime.nsec == 0 then
+      -- handle magic files the kernel generates as requested.
+      -- hopefully the heuristic works everywhere
+      local buffs = {}
+      local offs = 0
+      local size = 1024 * 48
+      repeat
+        data, err = fs.read(fd, size, offs)
+        table.insert(buffs, data)
+        offs = offs + (data and #data or 0)
+      until err or #data < size
+      if not err then
+        data = table.concat(buffs)
+      end
+    else
+      -- normal case for normal files.
+      data, err = fs.read(fd, stat.size)
+    end
   end
   uv.fs_close(fd, noop)
   return data, err
@@ -175,7 +194,7 @@ function fs.chroot(base)
   }
   local function resolve(path)
     assert(path, "path missing")
-    return pathJoin(base, pathJoin(path))
+    return pathJoin(base, pathJoin("./".. path))
   end
   function chroot.mkdir(path, mode)
     return fs.mkdir(resolve(path), mode)

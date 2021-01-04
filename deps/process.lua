@@ -18,7 +18,7 @@ limitations under the License.
 
 --[[lit-meta
   name = "luvit/process"
-  version = "2.0.0"
+  version = "2.1.2"
   dependencies = {
     "luvit/hooks@2.0.0",
     "luvit/timer@2.0.0",
@@ -56,18 +56,20 @@ local lenv = {}
 function lenv.get(key)
   return lenv[key]
 end
-setmetatable(lenv, {
-  __pairs = function(table)
-    local keys = env.keys()
-    local index = 0
-    return function(...)
-      index = index + 1
-      local name = keys[index]
-      if name then
-        return name, table[name]
-      end
+function lenv.iterate()
+  local keys = env.keys()
+  local index = 0
+  return function(...)
+    index = index + 1
+    local name = keys[index]
+    if name then
+      return name, env.get(name)
     end
-  end,
+  end, keys, nil
+end
+
+setmetatable(lenv, {
+  __pairs = lenv.iterate,
   __index = function(table, key)
     return env.get(key)
   end,
@@ -87,7 +89,7 @@ end
 local signalWraps = {}
 
 local function on(self, _type, listener)
-  if _type == "error" or _type == "exit" then
+  if _type == "error" or _type == "uncaughtException" or _type == "exit" then
     Emitter.on(self, _type, listener)
   else
     if not signalWraps[_type] then
@@ -122,6 +124,38 @@ local function exit(self, code)
   process.stdout:_end()
   process.stderr:once('finish', onFinish)
   process.stderr:_end()
+end
+
+-- Returns the memory usage of the current process in bytes
+-- in the form of a table with the structure:
+--  { rss = value, heapUsed = value }
+-- where rss is the resident set size for the current process,
+-- and heapUsed is the memory used by the Lua VM
+local function memoryUsage(self)
+  return {
+    rss = uv.resident_set_memory(),
+    heapUsed = collectgarbage("count")*1024
+  }
+end
+
+local MICROS_PER_SEC = 1000000
+
+-- Returns the user and system CPU time usage of the current process in microseconds
+-- (as a table of the format {user=value, system=value})
+-- The result of a previous call to process:cpuUsage() can optionally be passed as 
+-- an argument to get a diff reading
+local function cpuUsage(self, prevValue)
+  local rusage, err = uv.getrusage()
+  if not rusage then
+    return nil, err
+  end
+  local user = MICROS_PER_SEC * rusage.utime.sec + rusage.utime.usec
+  local system = MICROS_PER_SEC * rusage.stime.sec + rusage.stime.usec
+  if prevValue then
+    user = user - prevValue.user
+    system = system - prevValue.system
+  end
+  return {user=user, system=system}
 end
 
 local UvStreamWritable = Writable:extend()
@@ -173,11 +207,21 @@ local function globalProcess()
   process.pid = uv.getpid()
   process.on = on
   process.exit = exit
+  process.memoryUsage = memoryUsage
+  process.cpuUsage = cpuUsage
   process.removeListener = removeListener
-  process.stdin = UvStreamReadable:new(pp.stdin)
+  if uv.guess_handle(0) ~= "file" then
+    process.stdin = UvStreamReadable:new(pp.stdin)
+  else
+    -- special case for 'file' stdin handle to avoid aborting from
+    -- reading from a pipe to a file descriptor
+    -- see https://github.com/luvit/luvit/issues/1094
+    process.stdin = require('fs').ReadStream:new(nil, {fd=0})
+  end
   process.stdout = UvStreamWritable:new(pp.stdout)
   process.stderr = UvStreamWritable:new(pp.stderr)
   hooks:on('process.exit', utils.bind(process.emit, process, 'exit'))
+  hooks:on('process.uncaughtException', utils.bind(process.emit, process, 'uncaughtException'))
   return process
 end
 

@@ -26,9 +26,60 @@ local uv = require('uv')
 local utils = require('utils')
 
 local createCredentials
-local DEFAULT_CIPHERS = 'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:' .. -- TLS 1.2
-                        'RC4:HIGH:!MD5:!aNULL:!EDH'                     -- TLS 1.0
+local DEFAULT_CIPHERS
+local DEFAULT_SECUREPROTOCOL
 
+local isLibreSSL = function()
+  local _, _, V = openssl.version()
+  return V:find('^LibreSSL')
+end
+
+local isTLSv1_3 = function()
+  if isLibreSSL() then
+    return false
+  end
+
+  local _, _, V = openssl.version(true)
+  return V > 0x10100000
+end
+
+DEFAULT_CIPHERS = 'TLS_AES_128_GCM_SHA256:TLS_AES_128_CCM_SHA256:' .. --TLS 1.3
+                  'ECDHE-RSA-AES128-SHA256:AES128-GCM-SHA256:' ..     --TLS 1.2
+                  'RC4:HIGH:!MD5:!aNULL:!EDH'                         --TLS 1.0
+
+if isTLSv1_3() then
+--[[
+TLS_method(), TLS_server_method(), TLS_client_method() These are the
+general-purpose version-flexible SSL/TLS methods. The actual protocol version
+used will be negotiated to the highest version mutually supported by the client
+and the server. The supported protocols are SSLv3, TLSv1, TLSv1.1 and TLSv1.2.
+Applications should use these methods, and avoid the version- specific methods
+described below.
+...
+TLSv1_2_method(), ...
+...
+
+Note that OpenSSL-1.1 is the version of OpenSSL; Fedora 25 and RHEL 7.3 and
+other distributions (still) have OpenSSL-1.0.
+
+TLS versions are orthogonal to the OpenSSL version.  TLS_method() is the new
+in OpenSSL-1.1 version flexible function intended to replace the
+TLSv1_2_method() function in OpenSSL-1.0 and the older (?), insecure
+TLSv23_method(). (OpenSSL-1.0 does not have TLS_method())
+--]]
+  DEFAULT_SECUREPROTOCOL = 'TLS'
+else
+--[[
+A TLS/SSL connection established with these methods may understand the SSLv3,
+TLSv1, TLSv1.1 and TLSv1.2 protocols.
+
+A client will send out TLSv1 client hello messages including extensions and
+will indicate that it also understands TLSv1.1, TLSv1.2 and permits a fallback
+to SSLv3. A server will support SSLv3, TLSv1, TLSv1.1 and TLSv1.2 protocols.
+This is the best choice when compatibility is a concern.
+--]]
+  DEFAULT_SECUREPROTOCOL = 'SSLv23'
+end
 -------------------------------------------------------------------------------
 
 local getSecureOptions = function(protocol, flags)
@@ -58,12 +109,13 @@ end
 -------------------------------------------------------------------------------
 
 local Credential = Object:extend()
-function Credential:initialize(secureProtocol, defaultCiphers, flags, rejectUnauthorized, context)
+function Credential:initialize(secureProtocol,defaultCiphers, flags,
+                               rejectUnauthorized, context, isServer)
   self.rejectUnauthorized = rejectUnauthorized
   if context then
     self.context = context
   else
-    self.context = openssl.ssl.ctx_new(secureProtocol or 'TLSv1',
+    self.context = openssl.ssl.ctx_new(secureProtocol or DEFAULT_SECUREPROTOCOL,
       defaultCiphers or DEFAULT_CIPHERS)
     self.context:mode(true, 'release_buffers')
     self.context:options(getSecureOptions(secureProtocol, flags))
@@ -110,7 +162,7 @@ function TLSSocket:initialize(socket, options)
 
   self.options = options
   self.ctx = options.secureContext
-  self.server = options.isServer
+  self.server = options.server
   self.requestCert = options.requestCert
   self.rejectUnauthorized = options.rejectUnauthorized
 
@@ -153,13 +205,17 @@ function TLSSocket:_init()
   self.ssl = self.ctx.context:ssl(self.inp, self.out, self.server)
 
   if (not self.server) then
-    if self.options.servername then
-      self.ssl:set('hostname',self.options.servername)
+    if self.options.hostname then
+      self.ssl:set('hostname',self.options.hostname)
     end
     if self.ctx.session then
       self.ssl:session(self.ctx.session)
     end
   end
+end
+
+function TLSSocket:version()
+  return self.ssl:get('version')
 end
 
 function TLSSocket:getPeerCertificate()
@@ -172,7 +228,6 @@ function TLSSocket:_verifyClient()
     self:emit('secureConnection', self)
   else
     local verifyError, verifyResults
-    self.ctx.session = self.ssl:session()
     verifyError, verifyResults = self.ssl:getpeerverification()
     if verifyError then
       self.authorized = true
@@ -207,6 +262,7 @@ function TLSSocket:_verifyServer()
     end
   end
   if not self.destroyed then
+    self.ctx.session = self.ssl:session()
     self:emit('secureConnection', self)
   end
 end
@@ -224,7 +280,9 @@ function TLSSocket:destroy(err)
     timer.active(self)
     if self._shutdown then
       local _, shutdown_err = self.ssl:shutdown()
-      if shutdown_err == "want_read" or shutdown_err == "want_write" or shutdown_err == "syscall" then
+      if (shutdown_err == "want_read" or shutdown_err == "want_write"
+          or shutdown_err == "syscall")
+      then
         local r = self.out:pending()
         if r > 0 then
           timer.active(self._shutdownTimer)
@@ -307,8 +365,9 @@ function TLSSocket:flush(callback)
 end
 
 function TLSSocket:_write(data, callback)
-  local ret, i, err
-  if not self.ssl or self.destroyed or self._shutdown or not self._connected then
+  local ret, err
+  if (not self.ssl or self.destroyed or self._shutdown or not self._connected)
+  then
     return
   end
   if data then
@@ -404,7 +463,7 @@ function createCredentials(options, context)
   options = options or {}
 
   ctx = Credential:new(options.secureProtocol, options.ciphers,
-    options.secureOptions, options.rejectUnauthorized, context)
+    options.secureOptions, options.rejectUnauthorized, context, options.server)
   if context then
     return ctx
   end
@@ -443,6 +502,10 @@ end
 return {
   DEFAULT_CIPHERS = DEFAULT_CIPHERS,
   DEFAULT_CA_STORE = DEFAULT_CA_STORE,
+  DEFAULT_SECUREPROTOCOL = DEFAULT_SECUREPROTOCOL,
+  isLibreSSL = isLibreSSL(),
+  isTLSv1_3 = isTLSv1_3(),
+
   Credential = Credential,
   createCredentials = createCredentials,
   TLSSocket = TLSSocket,

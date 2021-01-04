@@ -18,7 +18,7 @@ limitations under the License.
 
 --[[lit-meta
   name = "luvit/net"
-  version = "2.0.1"
+  version = "2.0.3"
   dependencies = {
     "luvit/timer@2.0.0",
     "luvit/utils@2.0.0",
@@ -135,11 +135,11 @@ function Socket:_read(n)
 end
 
 function Socket:shutdown(callback)
-  if self.destroyed == true then
+  if self.destroyed == true and callback then
     return callback()
   end
 
-  if uv.is_closing(self._handle) then
+  if uv.is_closing(self._handle) and callback then
     return callback()
   end
 
@@ -199,13 +199,13 @@ function Socket:connect(...)
     self._handle = uv.new_tcp()
   end
 
-  uv.getaddrinfo(options.host, options.port, { socktype = "stream" }, function(err, res)
+  local _, derr = uv.getaddrinfo(options.host, options.port, { socktype = "stream" }, function(err, res)
     timer.active(self)
     if err then
       return self:destroy(err)
     end
     if self.destroyed then return end
-    uv.tcp_connect(self._handle, res[1].addr, res[1].port, function(err)
+    local _, terr = uv.tcp_connect(self._handle, res[1].addr, res[1].port, function(err)
       if err then
         return self:destroy(err)
       end
@@ -214,7 +214,13 @@ function Socket:connect(...)
       self:emit('connect')
       if callback then callback() end
     end)
+    if terr ~= nil then
+      self:destroy(terr)
+    end
   end)
+  if derr ~= nil then
+    return self:destroy(derr)
+  end
 
   return self
 end
@@ -251,7 +257,6 @@ function Socket:listen(queueSize)
   queueSize = queueSize or 128
   function onListen()
     local client = uv.new_tcp()
-    uv.tcp_keepalive(self._handle, true, 60)
     uv.tcp_keepalive(client, true, 60)
     uv.accept(self._handle, client)
     self:emit('connection', Socket:new({ handle = client }))

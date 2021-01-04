@@ -40,15 +40,11 @@ function Server:init(options, connectionListener)
   options = options or {}
   options.server = true
 
-  local sharedCreds = _common_tls.createCredentials(options)
+  options.secureContext = options.secureContext
+                          or _common_tls.createCredentials(options)
   net.Server.init(self, options, function(raw_socket)
     local socket
-    socket = _common_tls.TLSSocket:new(raw_socket, {
-      secureContext = sharedCreds,
-      isServer = true,
-      requestCert = options.requestCert,
-      rejectUnauthorized = options.rejectUnauthorized,
-    })
+    socket = _common_tls.TLSSocket:new(raw_socket, options)
     socket:on('secureConnection', function()
       connectionListener(socket)
     end)
@@ -73,14 +69,16 @@ local DEFAULT_OPTIONS = {
 }
 
 local function connect(options, callback)
-  local hostname, port, sock
+  local hostname, port, sock, colon
 
   callback = callback or function() end
   options = extend({}, DEFAULT_OPTIONS, options or {})
+  options.server = false
   port = options.port
-  hostname = options.host or options.servername
-  if not options.servername then
-    options.servername = hostname
+  hostname = options.host or options.hostname
+  colon = hostname:find(':')
+  if colon then
+    hostname = hostname:sub(1, colon-1 )
   end
 
   sock = _common_tls.TLSSocket:new(nil, options)
@@ -95,6 +93,10 @@ local function createServer(options, secureCallback)
 end
 
 return {
+  DEFAULT_SECUREPROTOCOL = _common_tls.DEFAULT_SECUREPROTOCOL,
+  isLibreSSL = _common_tls.isLibreSSL,
+  isTLSv1_3 = _common_tls.isTLSv1_3,
+
   TLSSocket = _common_tls.TLSSocket,
   createCredentials = _common_tls.createCredentials,
   connect = connect,

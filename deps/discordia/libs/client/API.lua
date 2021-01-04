@@ -13,7 +13,7 @@ local insert, concat = table.insert, table.concat
 local sleep = timer.sleep
 local running = coroutine.running
 
-local BASE_URL = "https://discordapp.com/api/v7"
+local BASE_URL = "https://discord.com/api/v7"
 
 local JSON = 'application/json'
 local PRECISION = 'millisecond'
@@ -187,15 +187,15 @@ function API:commit(method, url, req, payload, retries)
 	end
 
 	for i, v in ipairs(res) do
-		res[v[1]] = v[2]
+		res[v[1]:lower()] = v[2]
 		res[i] = nil
 	end
 
-	if res['X-RateLimit-Remaining'] == '0' then
-		delay = max(1000 * res['X-RateLimit-Reset-After'], delay)
+	if res['x-ratelimit-remaining'] == '0' then
+		delay = max(1000 * res['x-ratelimit-reset-after'], delay)
 	end
 
-	local data = res['Content-Type'] == JSON and decode(msg, 1, null) or msg
+	local data = res['content-type'] == JSON and decode(msg, 1, null) or msg
 
 	if res.code < 300 then
 

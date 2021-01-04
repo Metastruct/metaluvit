@@ -300,7 +300,7 @@ end
 local keyHandlers =
 {
   -- Enter
-  {{10}, function(self)
+  {{13}, function(self)
     local history = self.history
     local line = self.line
     -- Only record new history if it's non-empty and new

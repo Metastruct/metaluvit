@@ -17,7 +17,7 @@ limitations under the License.
 --]]
 --[[lit-meta
   name = "luvit/require"
-  version = "2.2.1"
+  version = "2.2.2"
   homepage = "https://github.com/luvit/luvit/blob/master/deps/require.lua"
   description = "Luvit's custom require system with relative requires and sane search paths."
   tags = {"luvit", "require"}
@@ -287,7 +287,7 @@ function Module:require(name)
   module = makeModule(path)
   moduleCache[key] = module
 
-  local ext = path:match("%.[^/\\]+$")
+  local ext = path:match("%.[^/\\%.]+$")
   if ext == ".lua" then
     local match = path:match("^bundle:(.*)$")
     if match then
