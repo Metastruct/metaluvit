@@ -15,9 +15,15 @@ cmds:add("lua",
 			end
 			
 			coroutine.wrap(function()
+				local content = reply
+							
+				-- prevent escaping from the code quotes...
+				content = content:gsub("`", "\\`")
+				content = content:gsub("*", "\\*")
 				msg:reply{
-				  content = reply,
-				  code = "lua"
+					content = content,
+					code = "lua",
+					allowed_mentions = { parse = {} },
 				}
 			end)()
 
