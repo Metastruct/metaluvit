@@ -4,16 +4,28 @@ local slash = require("discordia-slash")
 local log = require("modules/logsys")
 local hook = require("modules/hook")
 
-local _M
+local _M={}
 
 local client = discordia.Client({
 	cacheAllMembers = true,
 })
-client:useSlashCommands()
+client=client:useSlashCommands()
 _M.client=client
 
 client:on("slashCommandsReady", function()
+	log:debug("slashCommandsReady")
+	print"slashCommandsReady"
 	hook.run("slashCommandsReady",slash,client)
+end)
+
+
+
+client:on("messageCreate", function(msg)
+    print(msg.author.name,
+	msg.channel and msg.channel.name,
+	msg.member and msg.member:hasRole(config.groups.devs) and "(DEV)" or "",
+	msg.content)
+	_G.asd=msg
 end)
 
 client:on("ready", function()

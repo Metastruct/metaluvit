@@ -10,18 +10,24 @@ author = { name = "metastruct", email = "metastruct@metastruct.uk.to" }
 homepage = "https://metastruct.net/"
 ]]
 
+--package.path=package.path..';./?.lua'
 
+-- https://github.com/luvit/luvit/blob/master/deps/require.lua
+_G.require=require
+_G.require_lua=require
+
+print("package.path=",package.path)
 local log = require'modules/logsys'
-log:debug"preloading"
+local fs = require'fs'
+
+print""
+log:debug"Running preload scripts..."
 for _,file in pairs(fs.readdirSync("preload/")) do
 	if file:find("%.lua$") then
-		dofile(file)
+		dofile("preload/"..file)
 	end
 end
 
-log:debug"Running autorun..."
+print""
+log:debug"Running autorun scripts..."
 RunAutorun()
-log:debug"Finished loading"
-
-log:debug"Starting repl..."
-require("modules/repl")

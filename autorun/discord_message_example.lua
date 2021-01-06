@@ -1,3 +1,5 @@
+do return end
+
 -- Example
 
 local discord = require'modules/discord'

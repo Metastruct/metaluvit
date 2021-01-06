@@ -23,6 +23,7 @@ function string.ToTable(str)
 end
 
 function string.Explode(separator, str, withpattern)
+	if not str then return end
 	if separator == "" then return str:ToTable() end
 
 	local ret = {}

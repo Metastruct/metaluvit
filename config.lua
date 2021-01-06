@@ -5,7 +5,7 @@ config.channelID = os.getenv("DISCORDCHANNEL")
 config.guildID = os.getenv("DISCORDGUILD")
 config.webhook = os.getenv("DISCORDWEBHOOK")
 config.groups = {
-	devs = os.getenv("DISCORD_GROUP_DEVELOPERS")
+	devs = os.getenv("DISCORD_GROUP_DEVELOPERS"),
 	admins = os.getenv("DISCORD_GROUP_ADMINS")
 }
 
