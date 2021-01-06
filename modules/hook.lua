@@ -24,7 +24,7 @@ end
 
 local log = require'modules/logsys'
 
-function _M.run( name, gm, ... )
+function _M.run( name, ... )
 
 	local hooks = hooks[ name ]
 	if ( hooks ~= nil ) then
